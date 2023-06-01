@@ -22,6 +22,18 @@ body {
   margin: 0;
 }
 
+a {
+  --tw-text-opacity: 1;
+  color: rgb(37 99 235 / var(--tw-text-opacity));
+  text-decoration: underline;
+
+}
+
+a:visited {
+  --tw-text-opacity: 1;
+  color: rgb(147 51 234 / var(--tw-text-opacity));
+}
+
 * {
   box-sizing: border-box;
 }

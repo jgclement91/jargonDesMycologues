@@ -3,29 +3,6 @@
     height: 100%;
 }
 
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    width: 200px;
-    min-width: 200px;
-}
-
-.logo {
-    align-self: center;
-}
-
-.preamble {
-    display: flex;
-    padding-left: 12px;
-
-    height: 50px;
-
-    background-color: black;
-    color:white;
-
-    align-items: center;
-}
-
 .content {
     flex-grow: 1;
 }

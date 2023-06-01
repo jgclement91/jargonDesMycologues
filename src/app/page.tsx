@@ -1,26 +1,17 @@
-import Image from 'next/image'
-
+import Sidebar from "./components/sidebar";
+import Content from "./components/content";
 
 import "./page.css"
 
-export default function Home() {
+const App = () => {
   return (
     <div className="app">
-      <div className="sidebar">
-        <div className="logo">
-          <Image
-            src="/logo-cmm.png"
-            alt="Logo Cercle des mycologues de Montréal"
-            width={200}
-            height={140}
-          />
-        </div>
-        <div className="preamble">
-          <p>Préambule</p>
-        </div>
-        <div className="letter"></div>
+      <Sidebar />
+      <div className="content">
+        <Content />
       </div>
-      <div className="content"></div>
     </div>
   )
-}
+};
+
+export default App;
