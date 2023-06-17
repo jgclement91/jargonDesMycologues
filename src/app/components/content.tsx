@@ -1,11 +1,18 @@
 import TermDetails from "../terms/term-details";
 import Header from "./header";
 
-const Content = () => {
+type Props = {
+    term: string;
+    definition: any;
+    synonyms: any;
+};
+
+const Content = ({ term, definition, synonyms }: Props) => {
+
     return (
         <div className="content">
             <Header />
-            <TermDetails />
+            <TermDetails term={term} definition={definition} synonyms={synonyms} />
         </div>
     )
 }

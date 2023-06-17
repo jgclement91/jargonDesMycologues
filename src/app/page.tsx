@@ -1,17 +1,13 @@
-import Sidebar from "./components/sidebar";
-import Content from "./components/content";
+import "./Page.css"
 
-import "./page.css"
 
-const App = () => {
+const Page = async () => {
+
   return (
-    <div className="app">
-      <Sidebar />
-      <div className="content">
-        <Content />
-      </div>
+    <div className="content">
+      Page accueil
     </div>
   )
 };
 
-export default App;
+export default Page;
