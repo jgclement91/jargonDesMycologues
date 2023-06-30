@@ -1,0 +1,7 @@
+.selected-letter {
+    background-color: #e1ffe7;
+
+    &--hover {
+        background-color: #b4ffc3;
+    }
+}

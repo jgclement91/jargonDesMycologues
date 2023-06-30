@@ -36,3 +36,4 @@ next-env.d.ts
 
 # local certificates
 /certificates
+.vscode/launch.json

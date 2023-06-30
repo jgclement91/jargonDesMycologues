@@ -1,7 +1,5 @@
-import { getAllTerms, fetchTerm } from "@/app/clients/sanityClient";
-
+import { getAllTerms, fetchTerm, getImageUrl } from "@/app/clients/sanityClient";
 import Content from "../../components/content";
-// import ErrorPage from 'next/error'
 
 type Props = {
     params: {
@@ -25,15 +23,13 @@ const Page = async ({ params }: Props) => {
     }
 
     const data = await fetchTerm(decodeURIComponent(params.term));
-
-    // if(!data) {
-    //     return <ErrorPage statusCode={404} />
-    // }
+    const exampleUrl = data.example && getImageUrl(data.example);
+    const schemaUrl = data.schema && getImageUrl(data.schema);
 
     return (
         <div className="app">
             <div className="content">
-                <Content term={data.term} definition={data.definition} synonyms={data.synonymsRichText} />
+                <Content term={data.term} definition={data.definition} synonyms={data.synonymsRichText} exampleImageUrl={exampleUrl} exampleDescription={data.exampleDescription} schemaImageUrl={schemaUrl} />
             </div>
         </div>
     )

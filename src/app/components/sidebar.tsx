@@ -1,45 +1,106 @@
-'use client'
+"use client";
+import { useEffect, useState } from "react";
 
 import TermList from "../terms/term-list";
+import LetterList from "../letters/letter-list";
 import Logo from "./logo";
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from "next/navigation";
+
+import LetterSelect from "../letters/letter-select";
 
 import "./sidebar.css";
 
 type Props = {
-    terms: string[];
+  terms: string[];
 };
 
 const Sidebar = ({ terms }: Props) => {
+  const router = useRouter();
+  const path = decodeURIComponent(usePathname());
+  const pathSegments = path.split("/");
 
-    const path = decodeURIComponent(usePathname());
-    const pathSegments = path.split("/");
-    var selectedLetter = "A";
+  const [selectedLetter, setSelectedLetter] = useState("");
+  const [selectedTerm, setSelectedTerm] = useState("");
+  const [filteredTerms, setFilteredTerms] = useState([""]);
+  const [showLetters, setShowLetters] = useState(false);
 
-    if(pathSegments.length > 2) {
-        const selectedTerm = pathSegments[2];
-        selectedLetter = selectedTerm[0];
+  useEffect(() => {
+    if (pathSegments.length > 2) {
+      const termFromRoute = pathSegments[2];
 
-        if(selectedLetter == "É") {
-            selectedLetter = "E";
-        }
+      if (!termFromRoute) {
+        return;
+      }
+
+      setSelectedTerm(termFromRoute);
+
+      if (termFromRoute[0] === "É") {
+        setSelectedLetter("E");
+      } else {
+        setSelectedLetter(termFromRoute[0]);
+      }
+
+      setFilteredTerms(
+        terms.filter(
+          (t) =>
+            t.startsWith(termFromRoute[0]) ||
+            t.startsWith(`-${termFromRoute[0]}`)
+        )
+      );
     }
+  }, []);
 
-    return (
-        <div className="flex flex-col">
-            <Logo />
-            <div className="flex flex-none pl-3 h-12 bg-black text-white items-center">
-                <p>Préambule</p>
-            </div>
-            <div className="flex flex-none pl-3 h-12 bg-green-600 text-white items-center">
-                <p>{selectedLetter}</p>
-            </div>
-            <div className="flex flex-1 items-center overflow-y-auto term-list">
-                <TermList terms={terms.filter(t => t.startsWith(selectedLetter))} />
-            </div>
-        </div>
+  useEffect(() => {
+    setFilteredTerms(
+      terms.filter(
+        (t) =>
+          t.startsWith(selectedLetter) || t.startsWith(`-${selectedLetter}`)
+      )
     );
+  }, [selectedLetter]);
+
+  const displayLetters = () => {
+    setSelectedLetter("");
+    setShowLetters(true);
+  };
+
+  const handleOnTermSelect = (term: string) => {
+    setSelectedLetter(term[0]);
+    setSelectedTerm(term);
+    router.push(`/glossaire/${term}`);
+  };
+
+  const handleOnLetterSelect = (letter: string) => {
+    setSelectedLetter(letter);
+    setFilteredTerms(
+      terms.filter((t) => t.startsWith(letter) || t.startsWith(`-${letter}`))
+    );
+    setShowLetters(false);
+  };
+
+  return (
+    <div className="flex flex-col">
+      <Logo />
+      <div className="flex flex-none pl-3 h-12 bg-black text-white items-center">
+        <p>Préambule</p>
+      </div>
+      <LetterSelect selectedLetter={selectedLetter} onChange={displayLetters} />
+      {showLetters ? (
+        <div className="flex flex-1 items-center overflow-y-auto term-list">
+          <LetterList onLetterSelect={handleOnLetterSelect} />
+        </div>
+      ) : (
+        <div className="flex flex-1 items-center overflow-y-auto term-list">
+          <TermList
+            terms={filteredTerms}
+            selectedTerm={selectedTerm}
+            onTermSelect={handleOnTermSelect}
+          />
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Sidebar;
