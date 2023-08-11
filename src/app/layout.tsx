@@ -25,9 +25,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className='app'>
+        <div className='app divide-x > * + *'>
           <Sidebar terms={allTerms.map((x: { term: string; }) => x.term).sort()} />
-          <div className="content">
+          <div className="content flex">
             {children}
           </div>
         </div>

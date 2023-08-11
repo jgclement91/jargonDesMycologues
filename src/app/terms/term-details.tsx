@@ -19,8 +19,8 @@ const TermDetails = ({
   schemaImageUrl,
 }: Props) => {
   return (
-    <div>
-      <div className="px-8 py-6 bg-slate-200">
+    <div className="flex flex-col flex-grow">
+      <div className="flex flex-col px-8 py-4 bg-slate-200 flex-grow">
         <div className="text-green-600 text-6xl font-semibold">{term}</div>
         {synonyms && synonyms.length > 0 && (
           <span className="text-justify font-bold">
@@ -33,32 +33,32 @@ const TermDetails = ({
           </p>
         </div>
       </div>
-      <div className="flex justify-around">
+      <div className="flex flex-grow-[10] justify-around py-3">
         {schemaImageUrl && (
           <div className="pl-12 pr-10">
             <div>
-              <span className="inline-block text-center	w-full text-3xl font-bold pb-5">
+              <span className="inline-block text-center	w-full text-2xl font-bold pb-5">
                 Schéma
               </span>
               <Image
                 alt="Schema"
                 src={schemaImageUrl}
-                width={300}
-                height={300}
+                width={350}
+                height={350}
               />
             </div>
           </div>
         )}
         {exampleImageUrl && (
           <div>
-            <span className="inline-block text-center	w-full text-3xl font-bold pb-5">
+            <span className="inline-block text-center	w-full text-2xl font-bold pb-5">
               Exemple
             </span>
             <Image
               alt="Example"
               src={exampleImageUrl}
-              width={300}
-              height={300}
+              width={350}
+              height={350}
             />
             <div className="w-[300px] text-sm font-bold pt-2.5">
               <PortableText value={exampleDescription} />
