@@ -17,9 +17,23 @@ export async function getAllTerms() {
   return (await SanityClient.fetch(query));
 };
 
+export async function getAllPlanches() {
+  const query = '*[_type == "planche"] {title}';
+  return (await SanityClient.fetch(query));
+};
+
+
 export async function fetchTerm(term: string) {
   const query = '*[_type == "glossary" && term == $term]';
   const params = { term };
+
+  var data = (await SanityClient.fetch(query, params))[0];
+  return data;
+};
+
+export async function fetchPlanche(title: string) {
+  const query = '*[_type == "planche" && title == $title]';
+  const params = { title };
 
   var data = (await SanityClient.fetch(query, params))[0];
   return data;
@@ -30,6 +44,6 @@ export async function fetchTermList() {
   return (await SanityClient.fetch(query));
 };
 
-export function getImageUrl(image: SanityImageSource): string {
-  return SanityImageBuilder.image(image).width(300).url();
+export function getImageUrl(image: SanityImageSource, width: number): string {
+  return SanityImageBuilder.image(image).width(width).url();
 }

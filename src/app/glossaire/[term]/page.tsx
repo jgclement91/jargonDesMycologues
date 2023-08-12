@@ -23,8 +23,8 @@ const Page = async ({ params }: Props) => {
     }
 
     const data = await fetchTerm(decodeURIComponent(params.term));
-    const exampleUrl = data.example && getImageUrl(data.example);
-    const schemaUrl = data.schema && getImageUrl(data.schema);
+    const exampleUrl = data.example && getImageUrl(data.example, 350);
+    const schemaUrl = data.schema && getImageUrl(data.schema, 350);
 
     return (
         <div className="app">
