@@ -1,5 +1,5 @@
-import { PortableText } from "@portabletext/react";
 import Image from "next/image";
+import PortableTextComponent from "../components/portableTextComponent";
 
 type Props = {
   term: string;
@@ -24,12 +24,12 @@ const TermDetails = ({
         <div className="text-green-600 text-6xl font-semibold">{term}</div>
         {synonyms && synonyms.length > 0 && (
           <span className="text-justify font-bold">
-            Synonyme(s): <PortableText value={synonyms} />
+            Synonyme(s): <PortableTextComponent value={synonyms} />
           </span>
         )}
         <div className="pt-2">
           <p className="text-justify font-semibold leading-loose">
-            <PortableText value={definition} />
+            <PortableTextComponent value={definition} />
           </p>
         </div>
       </div>
@@ -61,7 +61,7 @@ const TermDetails = ({
               height={350}
             />
             <div className="w-[300px] text-sm font-bold pt-2.5">
-              <PortableText value={exampleDescription} />
+              <PortableTextComponent value={exampleDescription} />
             </div>
           </div>
         )}
