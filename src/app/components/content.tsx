@@ -9,6 +9,7 @@ type Props = {
   exampleImageUrl: any;
   exampleDescription: any;
   schemaImageUrl: any;
+  categories: any;
 };
 
 const Content = ({
@@ -18,6 +19,7 @@ const Content = ({
   exampleImageUrl,
   exampleDescription,
   schemaImageUrl,
+  categories
 }: Props) => {
   return (
     <div className="content h-full">
@@ -30,6 +32,7 @@ const Content = ({
           exampleImageUrl={exampleImageUrl}
           exampleDescription={exampleDescription}
           schemaImageUrl={schemaImageUrl}
+          categories={categories}
         />
       </div>
       <Footer />

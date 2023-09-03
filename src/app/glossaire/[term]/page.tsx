@@ -29,7 +29,7 @@ const Page = async ({ params }: Props) => {
     return (
         <div className="app">
             <div className="content">
-                <Content term={data.term} definition={data.definition} synonyms={data.synonymsRichText} exampleImageUrl={exampleUrl} exampleDescription={data.exampleDescription} schemaImageUrl={schemaUrl} />
+                <Content term={data.term} definition={data.definition} synonyms={data.synonymsRichText} exampleImageUrl={exampleUrl} exampleDescription={data.exampleDescription} schemaImageUrl={schemaUrl} categories={data.categories.filter(c => c !== "Synonyme")} />
             </div>
         </div>
     )

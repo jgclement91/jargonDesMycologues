@@ -1,5 +1,6 @@
 import Image from "next/image";
 import PortableTextComponent from "../components/portableTextComponent";
+import TermCategories from "./term-categories";
 
 type Props = {
   term: string;
@@ -8,7 +9,10 @@ type Props = {
   exampleImageUrl: any;
   exampleDescription: any;
   schemaImageUrl: any;
+  categories: string[];
 };
+
+
 
 const TermDetails = ({
   term,
@@ -17,13 +21,19 @@ const TermDetails = ({
   exampleImageUrl,
   exampleDescription,
   schemaImageUrl,
+  categories,
 }: Props) => {
   return (
     <div className="flex flex-col flex-grow">
       <div className="flex flex-col px-8 py-4 bg-slate-200 flex-grow">
-        <div className="text-green-600 text-6xl font-semibold">{term}</div>
+        <div className="flex text-green-600 text-6xl font-semibold pr-4 items-center">
+          {term}
+          {categories && categories.length > 0 && (
+            <TermCategories categories={categories} />
+          )}
+        </div>
         {synonyms && synonyms.length > 0 && (
-          <span className="text-justify font-bold">
+          <span className="text-justify font-bold pt-4">
             Synonyme(s): <PortableTextComponent value={synonyms} />
           </span>
         )}
