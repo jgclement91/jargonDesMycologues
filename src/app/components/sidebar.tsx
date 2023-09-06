@@ -55,6 +55,7 @@ const Sidebar = ({ terms }: Props) => {
     setFilteredTerms(
       terms.filter(
         (t) =>
+        t[0].localeCompare(selectedLetter, 'fr', { sensitivity: 'base' }) === 0 ||
           t.startsWith(selectedLetter) || t.startsWith(`-${selectedLetter}`)
       )
     );
@@ -66,9 +67,15 @@ const Sidebar = ({ terms }: Props) => {
   };
 
   const handleOnTermSelect = (term: string) => {
-    setSelectedLetter(term[0]);
+
+    let selectedTerm = term;
+    if (term.startsWith("-") || term.endsWith("-")) {
+      selectedTerm = selectedTerm.replace("-", "");
+    }
+
+    setSelectedLetter(selectedTerm[0]);
     setSelectedTerm(term);
-    router.push(`/glossaire/${term}`);
+    router.push(`/glossaire/${selectedTerm}`);
   };
 
   const handleOnLetterSelect = (letter: string) => {

@@ -23,6 +23,14 @@ const TermDetails = ({
   schemaImageUrl,
   categories,
 }: Props) => {
+
+  if (categories.some(c => c.toLowerCase() === "préfixe")){
+    term = `${term}-`;
+  }
+  else if (categories.some(c => c.toLowerCase() === "suffixe")){
+    term = `-${term}`;
+  }
+
   return (
     <div className="flex flex-col flex-grow">
       <div className="flex flex-col px-8 py-4 bg-slate-200 flex-grow">

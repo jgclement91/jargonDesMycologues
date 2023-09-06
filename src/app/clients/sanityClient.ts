@@ -48,9 +48,15 @@ export async function fetchPlanche(title: string) {
   return data;
 };
 
-export async function fetchTermList(): Promise<string[]> {
-  const query = '*[_type == "glossary"] {term}';
-  return (await SanityClient.fetch(query)).map((x: { term: string; }) => x.term);
+type TermListResponse = {
+  term: string;
+  categories: string[];
+}
+
+export async function fetchTermList(): Promise<TermListResponse[]> {
+  const query = '*[_type == "glossary"] {term, categories}';
+  var queryResult = await SanityClient.fetch(query);
+  return queryResult.map((x: TermListResponse) => ({ term: x.term.toString(), categories: x.categories.map(c => c.toString()) }));
 };
 
 export function getImageUrl(image: SanityImageSource, width: number): string {

@@ -93,7 +93,7 @@ categoryDictionary.set("personnes", {
   dimensions: { width: 55, height: 61 },
   description: "Titre donné à des personnes s’intéressant aux champignons",
 });
-categoryDictionary.set("prefixe", {
+categoryDictionary.set("préfixe", {
   icon: PrefixeIcon,
   text: "Préfixe",
   dimensions: { width: 55, height: 52 },
@@ -127,7 +127,7 @@ categoryDictionary.set("toxine", {
 categoryDictionary.set("toucher", {
   icon: ToucherIcon,
   text: "Toucher",
-  dimensions: { width: 50, height: 31 },
+  dimensions: { width: 55, height: 33 },
   description:
     "Caractère observable au toucher ou à la manipulation, tel que la viscosité ou la consistance",
 });
