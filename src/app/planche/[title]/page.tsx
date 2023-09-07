@@ -25,8 +25,8 @@ const Page = async ({ params }: Props) => {
   const imageUrl = data.image && getImageUrl(data.image, imageWidth);
 
   return (
-    <div className="app">
-      <Image alt="Schema" src={imageUrl} width={imageWidth} height={imageHeight} />
+    <div className="w-auto h-auto">
+      <Image alt={params.title} src={imageUrl} width={imageWidth} height={imageHeight} />
     </div>
   );
 };

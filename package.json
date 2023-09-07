@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@igloo-ui/input": "^2.1.2",
     "@igloo-ui/tooltip": "^3.1.6",
     "@portabletext/react": "^3.0.2",
     "@sanity/client": "^6.1.3",

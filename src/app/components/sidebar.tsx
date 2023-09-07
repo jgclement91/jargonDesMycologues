@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 import TermList from "../terms/term-list";
 import LetterList from "../letters/letter-list";
 import Logo from "./logo";
 
 import { usePathname, useRouter } from "next/navigation";
+import Input from '@igloo-ui/input';
 
 import LetterSelect from "../letters/letter-select";
 
@@ -24,8 +25,27 @@ const Sidebar = ({ terms }: Props) => {
   const [selectedTerm, setSelectedTerm] = useState("");
   const [filteredTerms, setFilteredTerms] = useState([""]);
   const [showLetters, setShowLetters] = useState(false);
+  const [termFilter, setTermFilter] = useState("");
+
+  const localeIncludes = (string: string, searchString:string) => {
+    const stringLength = string.length;
+    const searchStringLength = searchString.length;
+    const lengthDiff = stringLength - searchStringLength;
+
+    for (let i = 0; i <= lengthDiff; i++) {
+        if (string.substring(i, i + searchStringLength).localeCompare(searchString, 'fr', { sensitivity: 'base' }) === 0) {
+            return true;
+        }
+    }
+
+    return false;
+};
 
   useEffect(() => {
+    if (termFilter){
+      return;
+    }
+
     if (pathSegments.length > 2) {
       const termFromRoute = pathSegments[2];
 
@@ -52,14 +72,36 @@ const Sidebar = ({ terms }: Props) => {
   }, []);
 
   useEffect(() => {
-    setFilteredTerms(
-      terms.filter(
-        (t) =>
-        t[0].localeCompare(selectedLetter, 'fr', { sensitivity: 'base' }) === 0 ||
-          t.startsWith(selectedLetter) || t.startsWith(`-${selectedLetter}`)
-      )
-    );
-  }, [selectedLetter]);
+
+    if (termFilter) {
+      setSelectedLetter("");
+      setShowLetters(false);
+        var termsContainingFilter = terms
+        .filter(t => localeIncludes(t, termFilter));
+
+        const termsStartingWithFilter = termsContainingFilter.filter(
+          t => t
+          .substring(0, termFilter.length)
+          .localeCompare(termFilter, 'fr', { sensitivity: 'base' }) === 0
+          );
+
+        setFilteredTerms([...termsStartingWithFilter, ...termsContainingFilter.filter(t => !termsStartingWithFilter.includes(t))]);
+
+    }
+    else if (selectedLetter){
+      setFilteredTerms(
+        terms.filter(
+          (t) =>
+          t[0].localeCompare(selectedLetter, 'fr', { sensitivity: 'base' }) === 0 ||
+          t.substring(0, 2).localeCompare(`-${selectedLetter}`, 'fr', { sensitivity: 'base' }) === 0
+        )
+      );
+    }
+    else {
+      setShowLetters(true);
+    }
+
+  }, [selectedLetter, termFilter]);
 
   const displayLetters = () => {
     setSelectedLetter("");
@@ -73,7 +115,9 @@ const Sidebar = ({ terms }: Props) => {
       selectedTerm = selectedTerm.replace("-", "");
     }
 
-    setSelectedLetter(selectedTerm[0]);
+    if (!termFilter){
+      setSelectedLetter(selectedTerm[0]);
+    }
     setSelectedTerm(term);
     router.push(`/glossaire/${selectedTerm}`);
   };
@@ -93,6 +137,7 @@ const Sidebar = ({ terms }: Props) => {
         <p>Préambule</p>
       </div>
       <LetterSelect selectedLetter={selectedLetter} onChange={displayLetters} />
+      <Input className="h-auto w-56" type="text" placeholder="Filtrer" onChange={(e: ChangeEvent<HTMLInputElement>) => setTermFilter(e.target.value)}/>
       {showLetters ? (
         <div className="flex flex-1 items-center overflow-y-auto term-list">
           <LetterList onLetterSelect={handleOnLetterSelect} />
