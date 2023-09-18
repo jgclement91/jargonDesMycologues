@@ -1,5 +1,5 @@
-import { fetchTermList } from "@/app/clients/sanityClient";
 import Sidebar from "../components/sidebar";
+import { fetchTermList } from "@/app/clients/sanityClient";
 
 export const metadata = {
   title: "Jargon des mycologues",
@@ -20,7 +20,9 @@ export default async function RootLayout({
           .map((t) => {
             if (t.categories.some((u) => u.toLowerCase() === "préfixe")) {
               return `${t.term}-`;
-            } else if (t.categories.some((u) => u.toLowerCase() === "suffixe")) {
+            } else if (
+              t.categories.some((u) => u.toLowerCase() === "suffixe")
+            ) {
               return `-${t.term}`;
             }
 

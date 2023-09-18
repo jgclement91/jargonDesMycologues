@@ -6,7 +6,8 @@ import LetterList from "../letters/letter-list";
 import Logo from "./logo";
 
 import { usePathname, useRouter } from "next/navigation";
-import Input from '@igloo-ui/input';
+import Input from "@igloo-ui/input";
+import Search from '@igloo-ui/icons/dist/Search';
 
 import LetterSelect from "../letters/letter-select";
 
@@ -24,25 +25,30 @@ const Sidebar = ({ terms }: Props) => {
   const [selectedLetter, setSelectedLetter] = useState("");
   const [selectedTerm, setSelectedTerm] = useState("");
   const [filteredTerms, setFilteredTerms] = useState([""]);
-  const [showLetters, setShowLetters] = useState(false);
+  const [showLetters, setShowLetters] = useState(true);
+  const [showLetterSelect, setShowLetterSelect] = useState(true);
   const [termFilter, setTermFilter] = useState("");
 
-  const localeIncludes = (string: string, searchString:string) => {
+  const localeIncludes = (string: string, searchString: string) => {
     const stringLength = string.length;
     const searchStringLength = searchString.length;
     const lengthDiff = stringLength - searchStringLength;
 
     for (let i = 0; i <= lengthDiff; i++) {
-        if (string.substring(i, i + searchStringLength).localeCompare(searchString, 'fr', { sensitivity: 'base' }) === 0) {
-            return true;
-        }
+      if (
+        string
+          .substring(i, i + searchStringLength)
+          .localeCompare(searchString, "fr", { sensitivity: "base" }) === 0
+      ) {
+        return true;
+      }
     }
 
     return false;
-};
+  };
 
   useEffect(() => {
-    if (termFilter){
+    if (termFilter || selectedLetter) {
       return;
     }
 
@@ -50,17 +56,12 @@ const Sidebar = ({ terms }: Props) => {
       const termFromRoute = pathSegments[2];
 
       if (!termFromRoute) {
+        setShowLetters(true);
         return;
       }
 
       setSelectedTerm(termFromRoute);
-
-      if (termFromRoute[0] === "É") {
-        setSelectedLetter("E");
-      } else {
-        setSelectedLetter(termFromRoute[0]);
-      }
-
+      setSelectedLetter(termFromRoute[0]);
       setFilteredTerms(
         terms.filter(
           (t) =>
@@ -69,55 +70,72 @@ const Sidebar = ({ terms }: Props) => {
         )
       );
     }
-  }, []);
+  }, [path, termFilter]);
 
   useEffect(() => {
-
     if (termFilter) {
       setSelectedLetter("");
+      setShowLetterSelect(true);
       setShowLetters(false);
-        var termsContainingFilter = terms
-        .filter(t => localeIncludes(t, termFilter));
+      var termsContainingFilter = terms.filter((t) =>
+        localeIncludes(t, termFilter)
+      );
 
-        const termsStartingWithFilter = termsContainingFilter.filter(
-          t => t
-          .substring(0, termFilter.length)
-          .localeCompare(termFilter, 'fr', { sensitivity: 'base' }) === 0
-          );
+      const termsStartingWithFilter = termsContainingFilter.filter(
+        (t) =>
+          t
+            .substring(0, termFilter.length)
+            .localeCompare(termFilter, "fr", { sensitivity: "base" }) === 0
+      );
 
-        setFilteredTerms([...termsStartingWithFilter, ...termsContainingFilter.filter(t => !termsStartingWithFilter.includes(t))]);
-
+      setFilteredTerms([
+        ...termsStartingWithFilter,
+        ...termsContainingFilter.filter(
+          (t) => !termsStartingWithFilter.includes(t)
+        ),
+      ]);
     }
-    else if (selectedLetter){
+  }, [termFilter]);
+
+  useEffect(() => {
+    if (termFilter){
+      return;
+    }
+
+    if (selectedLetter) {
       setFilteredTerms(
         terms.filter(
           (t) =>
-          t[0].localeCompare(selectedLetter, 'fr', { sensitivity: 'base' }) === 0 ||
-          t.substring(0, 2).localeCompare(`-${selectedLetter}`, 'fr', { sensitivity: 'base' }) === 0
+            t[0].localeCompare(selectedLetter, "fr", {
+              sensitivity: "base",
+            }) === 0 ||
+            t.substring(0, 2).localeCompare(`-${selectedLetter}`, "fr", {
+              sensitivity: "base",
+            }) === 0
         )
       );
+    } else {
+      setFilteredTerms([]);
     }
-    else {
-      setShowLetters(true);
-    }
-
-  }, [selectedLetter, termFilter]);
+  }, [termFilter, selectedLetter]);
 
   const displayLetters = () => {
     setSelectedLetter("");
     setShowLetters(true);
+    setShowLetterSelect(false);
+    setTermFilter("");
   };
 
   const handleOnTermSelect = (term: string) => {
-
     let selectedTerm = term;
     if (term.startsWith("-") || term.endsWith("-")) {
       selectedTerm = selectedTerm.replace("-", "");
     }
 
-    if (!termFilter){
+    if (!termFilter) {
       setSelectedLetter(selectedTerm[0]);
     }
+
     setSelectedTerm(term);
     router.push(`/glossaire/${selectedTerm}`);
   };
@@ -128,16 +146,23 @@ const Sidebar = ({ terms }: Props) => {
       terms.filter((t) => t.startsWith(letter) || t.startsWith(`-${letter}`))
     );
     setShowLetters(false);
+    setShowLetterSelect(true);
   };
 
   return (
     <div className="flex flex-col">
       <Logo />
-      <div className="flex flex-none pl-3 h-12 bg-black text-white items-center">
-        <p>Préambule</p>
-      </div>
-      <LetterSelect selectedLetter={selectedLetter} onChange={displayLetters} />
-      <Input className="h-auto w-56" type="text" placeholder="Filtrer" onChange={(e: ChangeEvent<HTMLInputElement>) => setTermFilter(e.target.value)}/>
+      <Input
+        className="h-auto w-56"
+        type="text"
+        placeholder="Filtrer"
+        prefixIcon={<Search size="medium" />}
+        value={termFilter}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          setTermFilter(e.target.value)
+        }
+      />
+      <LetterSelect hideButton={!showLetterSelect} onChange={displayLetters} />
       {showLetters ? (
         <div className="flex flex-1 items-center overflow-y-auto term-list">
           <LetterList onLetterSelect={handleOnLetterSelect} />
@@ -148,6 +173,7 @@ const Sidebar = ({ terms }: Props) => {
             terms={filteredTerms}
             selectedTerm={selectedTerm}
             onTermSelect={handleOnTermSelect}
+            scrollToTerm={!termFilter}
           />
         </div>
       )}

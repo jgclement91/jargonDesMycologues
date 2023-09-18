@@ -6,3 +6,11 @@
     height: auto;
     width: 14rem;
 }
+
+.ids-input__asset--prefix {
+    padding: 0.625rem;
+}
+
+.ids-input--prefixIcon {
+    padding-left: 2.75rem;
+}
