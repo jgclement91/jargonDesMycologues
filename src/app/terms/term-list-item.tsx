@@ -28,7 +28,7 @@ const TermListItem = ({
 
   useTimeout(() => {
     if ((scrollToTerm && selected) || isFirstTerm) {
-      ref.current?.scrollIntoView({ behavior: isFirstTerm ? "instant" : "smooth" });
+      ref.current?.scrollIntoView({ behavior: isFirstTerm ? "auto" : "smooth" });
     }
   }, 50);
 
