@@ -10,12 +10,16 @@ type Props = {
   scrollToTerm: boolean;
 };
 
+function distinct(value: string, index: number, array: Array<string>) {
+  return array.indexOf(value) === index;
+}
+
 const TermList = ({ terms, selectedTerm, onTermSelect, scrollToTerm }: Props) => {
 
   return (
     <div className="h-full w-52">
       <div className="divide-y divide-gray-400">
-        {terms.map((term, index) => (
+        {terms.filter(distinct).map((term, index) => (
           <TermListItem
             key={term}
             term={term}

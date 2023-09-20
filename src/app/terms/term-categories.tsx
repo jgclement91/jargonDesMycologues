@@ -2,21 +2,21 @@
 
 import Image, { StaticImageData } from "next/image";
 import Tooltip from "@igloo-ui/tooltip";
-import ClassificationIcon from "../categoryIcons/Classification.gif";
-import CycleDeVieIcon from "../categoryIcons/Cycle-de-vie.gif";
-import EcologieIcon from "../categoryIcons/Écologie.gif";
-import LangueIcon from "../categoryIcons/Langue.gif";
-import LoupeIcon from "../categoryIcons/Loupe.gif";
-import MicroscopeIcon from "../categoryIcons/Microscope.gif";
-import NezIcon from "../categoryIcons/Nez.gif";
-import OeilNuIcon from "../categoryIcons/Oeil_nu.gif";
-import PersonnesIcon from "../categoryIcons/Personnes.gif";
-import PrefixeIcon from "../categoryIcons/Préfixe.gif";
-import ReactifChimiqueIcon from "../categoryIcons/Réactif-chimique.gif";
-import ScienceIcon from "../categoryIcons/Science.gif";
-import SuffixeIcon from "../categoryIcons/Suffixe.gif";
-import ToxinesEtSyndromesIcon from "../categoryIcons/Toxines-et-syndromes.gif";
-import ToucherIcon from "../categoryIcons/Toucher.gif";
+import ClassificationIcon from "../images/categoryIcons/Classification.gif";
+import CycleDeVieIcon from "../images/categoryIcons/Cycle-de-vie.gif";
+import EcologieIcon from "../images/categoryIcons/Écologie.gif";
+import LangueIcon from "../images/categoryIcons/Langue.gif";
+import LoupeIcon from "../images/categoryIcons/Loupe.gif";
+import MicroscopeIcon from "../images/categoryIcons/Microscope.gif";
+import NezIcon from "../images/categoryIcons/Nez.gif";
+import OeilNuIcon from "../images/categoryIcons/Oeil_nu.gif";
+import PersonnesIcon from "../images/categoryIcons/Personnes.gif";
+import PrefixeIcon from "../images/categoryIcons/Préfixe.gif";
+import ReactifChimiqueIcon from "../images/categoryIcons/Réactif-chimique.gif";
+import ScienceIcon from "../images/categoryIcons/Science.gif";
+import SuffixeIcon from "../images/categoryIcons/Suffixe.gif";
+import ToxinesEtSyndromesIcon from "../images/categoryIcons/Toxines-et-syndromes.gif";
+import ToucherIcon from "../images/categoryIcons/Toucher.gif";
 
 import "./term-categories.css"
 

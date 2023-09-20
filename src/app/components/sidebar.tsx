@@ -5,9 +5,10 @@ import TermList from "../terms/term-list";
 import LetterList from "../letters/letter-list";
 import Logo from "./logo";
 
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Input from "@igloo-ui/input";
-import Search from '@igloo-ui/icons/dist/Search';
+import Search from '@igloo-ui/icons/dist/svg/Search-24.svg';
 
 import LetterSelect from "../letters/letter-select";
 
@@ -26,7 +27,7 @@ const Sidebar = ({ terms }: Props) => {
   const [selectedTerm, setSelectedTerm] = useState("");
   const [filteredTerms, setFilteredTerms] = useState([""]);
   const [showLetters, setShowLetters] = useState(true);
-  const [showLetterSelect, setShowLetterSelect] = useState(true);
+  const [showLetterSelect, setShowLetterSelect] = useState(false);
   const [termFilter, setTermFilter] = useState("");
 
   const localeIncludes = (string: string, searchString: string) => {
@@ -60,6 +61,8 @@ const Sidebar = ({ terms }: Props) => {
         return;
       }
 
+      setShowLetters(false);
+      setShowLetterSelect(true);
       setSelectedTerm(termFromRoute);
       setSelectedLetter(termFromRoute[0]);
       setFilteredTerms(
@@ -102,7 +105,7 @@ const Sidebar = ({ terms }: Props) => {
       return;
     }
 
-    if (selectedLetter) {
+    if (selectedLetter || !showLetters) {
       setFilteredTerms(
         terms.filter(
           (t) =>
@@ -156,7 +159,7 @@ const Sidebar = ({ terms }: Props) => {
         className="h-auto w-56"
         type="text"
         placeholder="Filtrer"
-        prefixIcon={<Search size="medium" />}
+        prefixIcon={<Image src={Search} alt="Filtrer"/>}
         value={termFilter}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           setTermFilter(e.target.value)
