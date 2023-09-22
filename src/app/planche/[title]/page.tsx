@@ -19,7 +19,7 @@ export async function generateStaticParams() {
 const Page = async ({ params }: Props) => {
   const data = await fetchPlanche(decodeURIComponent(params.title));
   const imageRef = data.image.asset._ref;
-  const imageDimensions = imageRef.substr(imageRef.length-13, 9).split("x");
+  const imageDimensions = imageRef.split("-")[2].split("x");
   const imageWidth = imageDimensions[0];
   const imageHeight = imageDimensions[1];
   const imageUrl = data.image && getImageUrl(data.image, imageWidth);
