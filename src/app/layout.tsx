@@ -23,6 +23,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <link href="https://fonts.cdnfonts.com/css/tex-gyre-chorus" rel="stylesheet" />
       <body className={inter.className}>
           {children}
         <Analytics />

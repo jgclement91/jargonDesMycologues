@@ -8,7 +8,6 @@ import Logo from "./logo";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Input from "@igloo-ui/input";
-import Search from '@igloo-ui/icons/dist/svg/Search-24.svg';
 
 import LetterSelect from "../letters/letter-select";
 
@@ -159,7 +158,7 @@ const Sidebar = ({ terms }: Props) => {
         className="h-auto w-56"
         type="text"
         placeholder="Filtrer"
-        prefixIcon={<Image src={Search} alt="Filtrer"/>}
+        prefixIcon={<Image src="/search-svgrepo-com.svg" width={24} height={24} alt="Filtrer"/>}
         value={termFilter}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           setTermFilter(e.target.value)

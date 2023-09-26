@@ -1,6 +1,6 @@
-import Image from "next/image";
 import PortableTextComponent from "../components/portableTextComponent";
 import TermCategories from "./term-categories";
+import TermIllustrations from "./term-illustrations";
 
 type Props = {
   term: string;
@@ -12,8 +12,6 @@ type Props = {
   categories: string[];
 };
 
-
-
 const TermDetails = ({
   term,
   definition,
@@ -23,11 +21,9 @@ const TermDetails = ({
   schemaImageUrl,
   categories,
 }: Props) => {
-
-  if (categories.some(c => c.toLowerCase() === "préfixe")){
+  if (categories.some((c) => c.toLowerCase() === "préfixe")) {
     term = `${term}-`;
-  }
-  else if (categories.some(c => c.toLowerCase() === "suffixe")){
+  } else if (categories.some((c) => c.toLowerCase() === "suffixe")) {
     term = `-${term}`;
   }
 
@@ -51,39 +47,11 @@ const TermDetails = ({
           </p>
         </div>
       </div>
-      <div className="flex flex-grow-[10] justify-around py-3">
-        {schemaImageUrl && (
-          <div className="pl-12 pr-10">
-            <div>
-              <span className="inline-block text-center	w-full text-2xl font-bold pb-5">
-                Schéma
-              </span>
-              <Image
-                alt="Schema"
-                src={schemaImageUrl}
-                width={350}
-                height={350}
-              />
-            </div>
-          </div>
-        )}
-        {exampleImageUrl && (
-          <div>
-            <span className="inline-block text-center	w-full text-2xl font-bold pb-5">
-              Exemple
-            </span>
-            <Image
-              alt="Example"
-              src={exampleImageUrl}
-              width={350}
-              height={350}
-            />
-            <div className="w-[300px] text-sm font-bold pt-2.5">
-              <PortableTextComponent value={exampleDescription} />
-            </div>
-          </div>
-        )}
-      </div>
+      <TermIllustrations
+        exampleDescription={exampleDescription}
+        exampleImageUrl={exampleImageUrl}
+        schemaImageUrl={schemaImageUrl}
+      />
     </div>
   );
 };

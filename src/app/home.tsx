@@ -1,23 +1,28 @@
+"use client";
+
 import Image from "next/image";
 import BackgroundLeft from "./images/home/home-background-left.jpg";
 import BackgroundRight from "./images/home/home-background-right.jpg";
 import Footer from "./components/footer";
 import Header from "./components/header";
+import { useMediaQuery } from "@mui/material";
 
 const Home = () => {
+  const large = useMediaQuery('(min-width:1400px)');
+  const imagesWidth = large ? 250 : 200;
   return (
     <div className="h-full flex flex-col">
       <Header />
       <div className="flex flex-row bg-[#EBE3DA] h-full">
-        <div className="max-w-[200px]">
+        <div className={`max-w-[${imagesWidth}px]`}>
           <Image
-            width={200}
-            className="min-w-[200px]"
+            width={imagesWidth}
+            className={`min-w-[${imagesWidth}px]`}
             src={BackgroundLeft}
             alt="Arrière-plan gauche"
           />
         </div>
-        <div className="content h-3/4 pt-8 px-2 flex flex-col gap-4 font-bold text-center min-w-[450px]">
+        <div className="content h-3/4 pt-8 px-2 flex flex-col gap-4 font-bold text-center min-w-[600px]">
           <p>
             Bien souvent, les glossaires de mycologie s’adressent à des initiés
             ou à des amateurs familiers avec le vocabulaire de la botanique, le
@@ -51,10 +56,10 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="max-w-[200px]">
+        <div className={`max-w-[${imagesWidth}px]`}>
           <Image
-            width={200}
-            className="min-w-[200px]"
+            width={imagesWidth}
+            className={`min-w-[${imagesWidth}px]`}
             src={BackgroundRight}
             alt="Arrière-plan droit"
           />
