@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import PortableTextComponent from "../components/portableTextComponent";
-import { useMediaQuery } from "@mui/material";
+import { useMediaQuery } from "usehooks-ts";
 
 type Props = {
     exampleImageUrl: any;
@@ -26,6 +26,7 @@ const TermIllustrations = ({exampleImageUrl, exampleDescription, schemaImageUrl}
             src={schemaImageUrl}
             width={350}
             height={350}
+            className="min-w-[350px]"
           />
         </div>
       </div>
@@ -40,6 +41,7 @@ const TermIllustrations = ({exampleImageUrl, exampleDescription, schemaImageUrl}
           src={exampleImageUrl}
           width={350}
           height={350}
+          className="min-w-[350px]"
         />
         <div className="w-[300px] text-sm font-bold pt-2.5">
           <PortableTextComponent value={exampleDescription} />

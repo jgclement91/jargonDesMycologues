@@ -1,0 +1,15 @@
+.small-image-container {
+    max-width: 200px;
+}
+
+.large-image-container {
+    max-width: 250px;
+}
+
+.small-image {
+    min-width: 200px;
+}
+
+.large-image {
+    min-width: 250px;
+}

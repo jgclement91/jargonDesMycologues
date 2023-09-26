@@ -149,6 +149,7 @@ const TermCategories = ({ categories }: Props) => {
         return (
           <Tooltip key={categoryName} content={category.description} tooltipClassName="tooltip" maxWidth={250}>
             <Image
+              className="min-w-[55px]"
               key={category.text}
               alt={category.text}
               src={category.icon}

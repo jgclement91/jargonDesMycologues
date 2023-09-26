@@ -5,24 +5,29 @@ import BackgroundLeft from "./images/home/home-background-left.jpg";
 import BackgroundRight from "./images/home/home-background-right.jpg";
 import Footer from "./components/footer";
 import Header from "./components/header";
-import { useMediaQuery } from "@mui/material";
+import { useMediaQuery } from "usehooks-ts";
+
+import "./home.css";
 
 const Home = () => {
   const large = useMediaQuery('(min-width:1400px)');
   const imagesWidth = large ? 250 : 200;
+  const imageClass = `${large ? "large" : "small"}-image`;
+  const imageContainerClass = `${large ? "large" : "small"}-image-container`;
+
   return (
     <div className="h-full flex flex-col">
       <Header />
       <div className="flex flex-row bg-[#EBE3DA] h-full">
-        <div className={`max-w-[${imagesWidth}px]`}>
+        <div className={imageContainerClass}>
           <Image
             width={imagesWidth}
-            className={`min-w-[${imagesWidth}px]`}
+            className={imageClass}
             src={BackgroundLeft}
             alt="Arrière-plan gauche"
           />
         </div>
-        <div className="content h-3/4 pt-8 px-2 flex flex-col gap-4 font-bold text-center min-w-[600px]">
+        <div className="content h-3/4 pt-8 px-2 flex flex-col gap-4 font-bold text-center min-w-[450px]">
           <p>
             Bien souvent, les glossaires de mycologie s’adressent à des initiés
             ou à des amateurs familiers avec le vocabulaire de la botanique, le
@@ -56,10 +61,10 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className={`max-w-[${imagesWidth}px]`}>
+        <div className={imageContainerClass}>
           <Image
             width={imagesWidth}
-            className={`min-w-[${imagesWidth}px]`}
+            className={imageClass}
             src={BackgroundRight}
             alt="Arrière-plan droit"
           />
