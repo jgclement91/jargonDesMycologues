@@ -11,7 +11,7 @@ import "./home.css";
 
 const Home = () => {
   const large = useMediaQuery('(min-width:1400px)');
-  const imagesWidth = large ? 250 : 200;
+  const imagesHeight = large ? 650 : 500;
   const imageClass = `${large ? "large" : "small"}-image`;
   const imageContainerClass = `${large ? "large" : "small"}-image-container`;
 
@@ -21,13 +21,13 @@ const Home = () => {
       <div className="flex flex-row bg-[#EBE3DA] h-full">
         <div className={imageContainerClass}>
           <Image
-            width={imagesWidth}
+            height={imagesHeight}
             className={imageClass}
             src={BackgroundLeft}
             alt="Arrière-plan gauche"
           />
         </div>
-        <div className="content h-3/4 pt-8 px-2 flex flex-col gap-4 font-bold text-center min-w-[450px]">
+        <div className={`content h-3/4 pt-8 flex flex-col gap-4 font-bold text-center min-w-[450px] ${large ? "leading-9 px-32": "px-2"}`}>
           <p>
             Bien souvent, les glossaires de mycologie s’adressent à des initiés
             ou à des amateurs familiers avec le vocabulaire de la botanique, le
@@ -63,7 +63,7 @@ const Home = () => {
         </div>
         <div className={imageContainerClass}>
           <Image
-            width={imagesWidth}
+            height={imagesHeight}
             className={imageClass}
             src={BackgroundRight}
             alt="Arrière-plan droit"

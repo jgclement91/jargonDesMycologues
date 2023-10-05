@@ -1,15 +1,17 @@
 .small-image-container {
-    max-width: 200px;
+    max-height: 500px;
 }
 
 .large-image-container {
-    max-width: 250px;
+    max-height: 650px;
 }
 
 .small-image {
-    min-width: 200px;
+    min-height: 500px;
+    max-width: 173px;
 }
 
 .large-image {
-    min-width: 250px;
+    min-height: 650px;
+    max-width: 225px;
 }

@@ -28,7 +28,7 @@ const Header = () => {
         />
       )}
       <div className="align-middle align-center p-8 flex-grow">
-        <p className="text-white text-6xl font-semibold text-center title">
+        <p className="text-white text-7xl font-semibold text-center title">
           Le jargon des mycologues
         </p>
       </div>
