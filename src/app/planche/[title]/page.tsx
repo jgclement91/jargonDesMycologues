@@ -6,6 +6,8 @@ import {
 
 import Image from "next/image";
 
+import "./page.css"
+
 type Props = {
   params: {
     title: string;
