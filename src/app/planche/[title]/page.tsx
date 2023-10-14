@@ -3,10 +3,11 @@ import {
   fetchPlanche,
   getImageUrl,
 } from "@/app/clients/sanityClient";
+import { Metadata  } from 'next'
 
 import Image from "next/image";
 
-import "./page.css"
+import "./page.css";
 
 type Props = {
   params: {
@@ -18,6 +19,14 @@ export async function generateStaticParams() {
   return await getAllPlanches();
 }
 
+export async function generateMetadata(
+  { params }: Props
+): Promise<Metadata> {
+  return {
+    title: `Planche de ${params.title} - Jargon des mycologues`,
+  }
+}
+
 const Page = async ({ params }: Props) => {
   const data = await fetchPlanche(decodeURIComponent(params.title));
   const imageRef = data.image.asset._ref;
@@ -27,9 +36,14 @@ const Page = async ({ params }: Props) => {
   const imageUrl = data.image && getImageUrl(data.image, imageWidth);
 
   return (
-    <div className="w-auto h-auto">
-      <Image alt={params.title} src={imageUrl} width={imageWidth} height={imageHeight} />
-    </div>
+      <div className="w-auto h-auto">
+        <Image
+          alt={params.title}
+          src={imageUrl}
+          width={imageWidth}
+          height={imageHeight}
+        />
+      </div>
   );
 };
 

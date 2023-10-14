@@ -17,7 +17,11 @@ export async function getAllTerms() {
   return (await SanityClient.fetch(query));
 };
 
-export async function getAllPlanches() {
+type Planche = {
+  title: string;
+}
+
+export async function getAllPlanches() : Promise<Planche[]> {
   const query = '*[_type == "planche"] {title}';
   return (await SanityClient.fetch(query));
 };

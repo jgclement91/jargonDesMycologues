@@ -1,47 +1,69 @@
-import { getAllTerms, fetchTerm, getImageUrl } from "@/app/clients/sanityClient";
+import {
+  getAllTerms,
+  fetchTerm,
+  getImageUrl,
+} from "@/app/clients/sanityClient";
+import { Metadata } from 'next'
+import {toHTML} from '@portabletext/to-html'
+
 import Content from "../../components/content";
 
 type Props = {
-    params: {
-        term: string
-    }
-}
+  params: {
+    term: string;
+  };
+};
 
 export async function generateStaticParams() {
-    return await getAllTerms();
+  return await getAllTerms();
 }
 
-const Page = async ({ params }: Props) => {
-
-    if(params.term.length == 1) {
-        return (
-            <div className="app">
-                <div className="content">
-                </div>
-            </div>
-        )
-    }
+export async function generateMetadata(
+    { params }: Props
+  ): Promise<Metadata> {
 
     const data = await fetchTerm(decodeURIComponent(params.term));
-    if (!data) {
-        return (
-            <div className="app">
-                <div className="content">
-                    Terme introuvable
-                </div>
-            </div>
-        )
-    }
-    const exampleUrl = data.example && getImageUrl(data.example, 350);
-    const schemaUrl = data.schema && getImageUrl(data.schema, 350);
 
+    return {
+      title: `${data.term} - Jargon des mycologues`,
+    }
+  }
+
+const Page = async ({ params }: Props) => {
+  if (params.term.length == 1) {
     return (
-        <div className="app">
-            <div className="content">
-                <Content term={data.term} definition={data.definition} synonyms={data.synonymsRichText} exampleImageUrl={exampleUrl} exampleDescription={data.exampleDescription} schemaImageUrl={schemaUrl} categories={data.categories?.filter(c => c !== "Synonyme") || []} />
-            </div>
-        </div>
-    )
+      <div className="app">
+        <div className="content"></div>
+      </div>
+    );
+  }
+
+  const data = await fetchTerm(decodeURIComponent(params.term));
+  if (!data) {
+    return (
+      <div className="app">
+        <div className="content">Terme introuvable</div>
+      </div>
+    );
+  }
+  const exampleUrl = data.example && getImageUrl(data.example, 350);
+  const schemaUrl = data.schema && getImageUrl(data.schema, 350);
+
+  return (
+    <div className="app">
+      <div className="content">
+        <Content
+          term={data.term}
+          definition={data.definition}
+          synonyms={data.synonymsRichText}
+          exampleImageUrl={exampleUrl}
+          exampleDescription={data.exampleDescription}
+          schemaImageUrl={schemaUrl}
+          categories={data.categories?.filter((c) => c !== "Synonyme") || []}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default Page;
