@@ -4,7 +4,6 @@ import {
   getImageUrl,
 } from "@/app/clients/sanityClient";
 import { Metadata } from 'next'
-import {toHTML} from '@portabletext/to-html'
 
 import Content from "../../components/content";
 
