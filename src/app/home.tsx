@@ -34,25 +34,27 @@ const Home = () => {
         >
           <p>
             Bien souvent, les glossaires de mycologie s’adressent à des initiés
-            ou à des amateurs familiers avec le vocabulaire de la botanique, le
-            latin et le grec ancien et parfois même au langage de la mycologie
-            elle-même. Ainsi, les termes utilisés dans les définitions font
-            fréquemment référence à des concepts plus ou moins bien compris des
-            novices. Ce glossaire illustré et vulgarisé vise principalement à
-            combler cette lacune par l’utilisation d’un langage accessible à
+            ou à des amateurs familiers avec le vocabulaire de la botanique, du
+            grec ancien et du latin et parfois même avec le langage de la
+            mycologie elle-même. Ainsi, les termes utilisés dans les définitions
+            font fréquemment référence à des concepts plus ou moins bien compris
+            des novices. Ce glossaire illustré et vulgarisé vise principalement
+            à combler cette lacune par l’utilisation d’un langage accessible à
             tous et la présentation d’exemples, de schémas et de plus de 75
             planches anatomiques, dont une soixantaine se consacrent à des
-            portraits de « familles ». Toutefois, il demeure parfois nécessaire
+            portraits de « famille ». Toutefois, il demeure parfois nécessaire
             d’utiliser dans les définitions des termes techniques se référant à
             certains concepts abstraits ou complexes. Pour pallier cette
-            difficulté, des hyperliens ont été implantés à même le texte
+            difficulté, nous avons implanté des hyperliens à même le texte
             permettant d’accéder d’un simple clic de souris aux définitions.
           </p>
           <p>
-            Chacun des éléments de ce glossaire s’accompagne d’un ou deux
-            symboles graphiques indiquant le ou les contextes d’utilisation du
-            terme décrit. Il suffit de passer la souris sur ces icônes pour
-            afficher sa signification.
+            Chacun des éléments de ce glossaire s’accompagne de un ou deux symboles
+            graphiques indiquant le ou les contextes d’utilisation du terme décrit. Il suffit de
+            passer la souris sur ces icônes pour afficher leur signification.
+          </p>
+          <p className="text-red-600">
+            Un accès direct aux planches sera prochainement disponible.
           </p>
           <div>
             <div className="text-xs font-medium">
