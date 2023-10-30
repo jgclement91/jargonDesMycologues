@@ -41,8 +41,8 @@ const Home = () => {
             des novices. Ce glossaire illustré et vulgarisé vise principalement
             à combler cette lacune par l’utilisation d’un langage accessible à
             tous et la présentation d’exemples, de schémas et de plus de 75
-            planches anatomiques, dont une soixantaine se consacrent à des
-            portraits de « famille ». Toutefois, il demeure parfois nécessaire
+            planches anatomiques, dont une soixantaine se consacrent à des portraits de
+            <span className="whitespace-nowrap"> « famille ».</span> Toutefois, il demeure parfois nécessaire
             d’utiliser dans les définitions des termes techniques se référant à
             certains concepts abstraits ou complexes. Pour pallier cette
             difficulté, nous avons implanté des hyperliens à même le texte
