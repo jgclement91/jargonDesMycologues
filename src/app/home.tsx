@@ -38,7 +38,7 @@ const Home = () => {
             grec ancien et du latin et parfois même avec le langage de la
             mycologie elle-même. Ainsi, les termes utilisés dans les définitions
             font fréquemment référence à des concepts plus ou moins bien compris
-            des novices. Ce glossaire illustré et vulgarisé vise principalement
+            des novices. Ce glossaire illustré et vulgarisé, contenant plus de 1200 termes, vise principalement
             à combler cette lacune par l’utilisation d’un langage accessible à
             tous et la présentation d’exemples, de schémas et de plus de 75
             planches anatomiques, dont une soixantaine se consacrent à des portraits de
