@@ -23,6 +23,12 @@ export async function generateMetadata(
 
     const data = await fetchTerm(decodeURIComponent(params.term));
 
+    if (!data && params.term.length == 1) {
+      return {
+        title: `Glossaire - Jargon des mycologues`,
+      }
+    }
+
     return {
       title: `${data.term} - Jargon des mycologues`,
     }
@@ -49,8 +55,8 @@ const Page = async ({ params }: Props) => {
   const schemaUrl = data.schema && getImageUrl(data.schema, 350);
 
   return (
-    <div className="app">
-      <div className="content">
+    <div className="flex flex-grow">
+      <div className="flex flex-grow">
         <Content
           term={data.term}
           definition={data.definition}

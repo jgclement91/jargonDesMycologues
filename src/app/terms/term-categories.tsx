@@ -137,6 +137,11 @@ type Props = {
 };
 
 const TermCategories = ({ categories }: Props) => {
+
+  if (!categories){
+    return <></>;
+  }
+
   return (
     <div className="flex pl-4 gap-8 self-center">
       {categories.map((categoryName: string) => {

@@ -28,7 +28,7 @@ const Home = () => {
           />
         </div>
         <div
-          className={`content h-3/4 pt-8 flex flex-col gap-4 font-bold text-center min-w-[650px] ${
+          className={`flex-grow h-3/4 pt-8 flex flex-col gap-4 font-bold text-center min-w-[650px] ${
             large ? "leading-9 px-32" : "px-2"
           }`}
         >

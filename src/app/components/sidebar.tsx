@@ -151,6 +151,10 @@ const Sidebar = ({ terms }: Props) => {
     setShowLetterSelect(true);
   };
 
+  if (path.startsWith("/planche/")) {
+    return <></>;
+  }
+
   return (
     <div className="flex flex-col">
       <Logo />

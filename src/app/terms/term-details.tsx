@@ -21,9 +21,9 @@ const TermDetails = ({
   schemaImageUrl,
   categories,
 }: Props) => {
-  if (categories.some((c) => c.toLowerCase() === "préfixe")) {
+  if (categories?.some((c) => c.toLowerCase() === "préfixe")) {
     term = `${term}-`;
-  } else if (categories.some((c) => c.toLowerCase() === "suffixe")) {
+  } else if (categories?.some((c) => c.toLowerCase() === "suffixe")) {
     term = `-${term}`;
   }
 

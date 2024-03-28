@@ -1,30 +1,53 @@
 import { createClient } from "@sanity/client";
-import imageUrlBuilder from '@sanity/image-url'
+import imageUrlBuilder from "@sanity/image-url";
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
-const SanityClient = createClient({
+const clientConfig = {
   projectId: process.env.SANITY_PROJECT_ID,
   token: process.env.SANITY_TOKEN,
   dataset: "production",
   useCdn: true,
-  apiVersion: "2023-06-16"
-});
+  apiVersion: "2023-06-16",
+};
 
-const SanityImageBuilder = imageUrlBuilder(SanityClient);
+const _sanityClient = createClient(clientConfig);
 
 export async function getAllTerms() {
   const query = '*[_type == "glossary"] {term}';
-  return (await SanityClient.fetch(query));
-};
-
-type Planche = {
-  title: string;
+  return await _sanityClient.fetch(query);
 }
 
-export async function getAllPlanches() : Promise<Planche[]> {
-  const query = '*[_type == "planche"] {title}';
-  return (await SanityClient.fetch(query));
+type PlancheTitle = {
+  title: string;
 };
+
+export type Planche = {
+  title: string;
+  label: string;
+  categories: string[];
+  image: string;
+};
+
+export async function getAllPlancheTitles(): Promise<PlancheTitle[]> {
+  const query = '*[_type == "planche"] {title}';
+  const plancheTitles = await _sanityClient.fetch(query);
+
+  return plancheTitles.map((planche: any) => ({
+    title: planche.title
+  }));
+}
+
+export async function getAllPlanches(imageWidth: number): Promise<Planche[]> {
+  const query = '*[_type == "planche"]';
+  const planches = await _sanityClient.fetch(query);
+
+  return planches.map((planche: any) => ({
+    title: planche.title,
+    label: planche.label,
+    categories: planche.categories,
+    image: getImageUrl(planche.image, imageWidth),
+  })).sort((a: Planche, b: Planche) => a.title.localeCompare(b.title));
+}
 
 type Term = {
   term: string;
@@ -34,35 +57,40 @@ type Term = {
   exampleDescription: any;
   schema: string;
   categories: string[];
-}
+};
 
-export async function fetchTerm(term: string) : Promise<Term> {
+export async function fetchTerm(term: string): Promise<Term> {
   const query = '*[_type == "glossary" && term == $term]';
   const params = { term };
 
-  var data = (await SanityClient.fetch(query, params))[0];
+  var data = (await _sanityClient.fetch(query, params))[0];
   return data;
-};
+}
 
 export async function fetchPlanche(title: string) {
   const query = '*[_type == "planche" && title == $title]';
   const params = { title };
 
-  var data = (await SanityClient.fetch(query, params))[0];
+  var data = (await _sanityClient.fetch(query, params))[0];
   return data;
-};
+}
 
 type TermListResponse = {
   term: string;
   categories: string[];
-}
+};
 
 export async function fetchTermList(): Promise<TermListResponse[]> {
   const query = '*[_type == "glossary"] {term, categories}';
-  var queryResult = await SanityClient.fetch(query);
-  return queryResult.map((x: TermListResponse) => ({ term: x.term.toString(), categories: x.categories.map(c => c.toString()) }));
-};
+  var queryResult = await _sanityClient.fetch(query);
+  return queryResult.map((x: TermListResponse) => ({
+    term: x.term.toString(),
+    categories: x.categories?.map((c) => c.toString()),
+  }));
+}
 
 export function getImageUrl(image: SanityImageSource, width: number): string {
-  return SanityImageBuilder.image(image).width(width).url();
+  const sanityImageBuilder = imageUrlBuilder(_sanityClient);
+
+  return sanityImageBuilder.image(image).width(width).url();
 }

@@ -1,5 +1,5 @@
 import {
-  getAllPlanches,
+  getAllPlancheTitles,
   fetchPlanche,
   getImageUrl,
 } from "@/app/clients/sanityClient";
@@ -16,18 +16,22 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  return await getAllPlanches();
+  return await getAllPlancheTitles();
 }
 
 export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
+
+  const title = decodeURIComponent(params.title).replaceAll("-", " ").split(".")[0];
+
   return {
-    title: `Planche de ${params.title} - Jargon des mycologues`,
+    title: `Planche de ${decodeURIComponent(title)} - Jargon des mycologues`,
   }
 }
 
 const Page = async ({ params }: Props) => {
+  const title = decodeURIComponent(params.title).replaceAll("-", " ").split(".")[0];
   const data = await fetchPlanche(decodeURIComponent(params.title));
   const imageRef = data.image.asset._ref;
   const imageDimensions = imageRef.split("-")[2].split("x");
@@ -38,7 +42,7 @@ const Page = async ({ params }: Props) => {
   return (
       <div className="w-auto h-auto">
         <Image
-          alt={params.title}
+          alt={title}
           src={imageUrl}
           width={imageWidth}
           height={imageHeight}
