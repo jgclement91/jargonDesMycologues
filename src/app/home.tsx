@@ -54,7 +54,7 @@ const Home = () => {
             passer la souris sur ces icônes pour afficher leur signification.
           </p>
           <p className="text-red-600">
-            Un accès direct aux planches sera prochainement disponible.
+            Un accès direct aux planches est maintenant disponible.
           </p>
           <div>
             <div className="text-xs font-medium">

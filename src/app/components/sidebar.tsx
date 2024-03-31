@@ -100,7 +100,7 @@ const Sidebar = ({ terms }: Props) => {
   }, [termFilter]);
 
   useEffect(() => {
-    if (termFilter){
+    if (termFilter) {
       return;
     }
 
@@ -158,11 +158,21 @@ const Sidebar = ({ terms }: Props) => {
   return (
     <div className="flex flex-col">
       <Logo />
+      <div className="h-12 pt-2 flex self-center">
+        <a className="text-lg font-bold" href="/planche">Accès aux planches</a>
+      </div>
       <Input
         className="h-auto w-56"
         type="text"
         placeholder="Filtrer"
-        prefixIcon={<Image src="/search-svgrepo-com.svg" width={24} height={24} alt="Filtrer"/>}
+        prefixIcon={
+          <Image
+            src="/search-svgrepo-com.svg"
+            width={24}
+            height={24}
+            alt="Filtrer"
+          />
+        }
         value={termFilter}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           setTermFilter(e.target.value)
