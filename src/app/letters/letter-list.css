@@ -1,3 +1,8 @@
+.letter-list {
+    height: calc(100vh - 17.5rem);
+    overflow-y: auto;
+}
+
 .selected-letter {
     background-color: #e1ffe7;
 

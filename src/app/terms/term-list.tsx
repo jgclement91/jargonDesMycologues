@@ -17,7 +17,7 @@ function distinct(value: string, index: number, array: Array<string>) {
 const TermList = ({ terms, selectedTerm, onTermSelect, scrollToTerm }: Props) => {
 
   return (
-    <div className="h-full w-52">
+    <div className="w-52 w-full term-list">
       <div className="divide-y divide-gray-400">
         {terms.filter(distinct).map((term, index) => (
           <TermListItem
