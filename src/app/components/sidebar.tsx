@@ -215,7 +215,7 @@ const Sidebar = ({ terms }: Props) => {
             onClick={goToPlanche}
           />
           </div>
-          <a className="text-lg font-bold h-full place-content-center">Accès aux planches</a>
+          <a className="text-md font-bold h-full place-content-center">Accès aux planches</a>
         </div>
       )}
       <Input
