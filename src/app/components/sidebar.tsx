@@ -1,16 +1,27 @@
 "use client";
-import { ChangeEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  SyntheticEvent,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 
 import TermList from "../terms/term-list";
 import LetterList from "../letters/letter-list";
 import Logo from "./logo";
+import Tooltip from "@igloo-ui/tooltip";
 
+import Drawer from "react-modern-drawer";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Input from "@igloo-ui/input";
+import { useMediaQuery } from "usehooks-ts";
 
 import LetterSelect from "../letters/letter-select";
+import Planche from "../images/sidebar/planche.png";
 
+import "react-modern-drawer/dist/index.css";
 import "./sidebar.css";
 
 type Props = {
@@ -22,12 +33,20 @@ const Sidebar = ({ terms }: Props) => {
   const path = decodeURIComponent(usePathname());
   const pathSegments = path.split("/");
 
+  const mobile = useMediaQuery("(max-width:640px)");
+
   const [selectedLetter, setSelectedLetter] = useState("");
   const [selectedTerm, setSelectedTerm] = useState("");
   const [filteredTerms, setFilteredTerms] = useState([""]);
   const [showLetters, setShowLetters] = useState(true);
   const [showLetterSelect, setShowLetterSelect] = useState(false);
   const [termFilter, setTermFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const filterRef = useRef<HTMLInputElement>(null);
+
+  const toggleDrawer = () => {
+    setIsOpen((prevState) => !prevState);
+  };
 
   const localeIncludes = (string: string, searchString: string) => {
     const stringLength = string.length;
@@ -104,7 +123,7 @@ const Sidebar = ({ terms }: Props) => {
       return;
     }
 
-    if (selectedLetter || !showLetters) {
+    if (selectedLetter?.length > 0) { //or selectedTerm -> Use term's first letter.
       setFilteredTerms(
         terms.filter(
           (t) =>
@@ -116,8 +135,25 @@ const Sidebar = ({ terms }: Props) => {
             }) === 0
         )
       );
-    } else {
+    }
+    else if (selectedTerm) {
+      const letter = selectedTerm[0];
+      setFilteredTerms(
+        terms.filter(
+          (t) =>
+            t[0].localeCompare(letter, "fr", {
+              sensitivity: "base",
+            }) === 0 ||
+            t.substring(0, 2).localeCompare(`-${letter}`, "fr", {
+              sensitivity: "base",
+            }) === 0
+        )
+      );
+    }
+    else {
+      console.log("allo");
       setFilteredTerms([]);
+      displayLetters();
     }
   }, [termFilter, selectedLetter]);
 
@@ -139,6 +175,7 @@ const Sidebar = ({ terms }: Props) => {
     }
 
     setSelectedTerm(term);
+    setIsOpen(false);
     router.push(`/glossaire/${selectedTerm}`);
   };
 
@@ -151,18 +188,39 @@ const Sidebar = ({ terms }: Props) => {
     setShowLetterSelect(true);
   };
 
+  const goToPlanche = (e: SyntheticEvent) => {
+    router.push(`/planche`);
+    e.stopPropagation();
+  };
+
   if (path.startsWith("/planche/")) {
     return <></>;
   }
 
-  return (
-    <div className="flex flex-col">
+  const sidebar = (
+    <div className="flex flex-col" onClick={(e) => e.stopPropagation()}>
       <Logo />
-      <div className="h-12 pt-2 flex self-center">
-        <a className="text-lg font-bold" href="/planche">Accès aux planches</a>
-      </div>
+      {!path.endsWith("/planche") && (
+        <div
+          className="h-12 pt-2 flex gap-2 self-center cursor-pointer place-content-center"
+          onClick={goToPlanche}
+        >
+          <div className="place-content-center">
+          <Image
+            src={Planche}
+            alt="Planches"
+            width={36}
+            height={36}
+            className="cursor-pointer"
+            onClick={goToPlanche}
+          />
+          </div>
+          <a className="text-md font-bold h-full place-content-center">Accès aux planches</a>
+        </div>
+      )}
       <Input
         className="h-auto w-56"
+        ref={filterRef}
         type="text"
         placeholder="Filtrer"
         prefixIcon={
@@ -184,7 +242,7 @@ const Sidebar = ({ terms }: Props) => {
           <LetterList onLetterSelect={handleOnLetterSelect} />
         </div>
       ) : (
-        <div className="flex flex-1 items-center overflow-y-auto term-list">
+        <div className="flex flex-1 items-center overflow-y-auto">
           <TermList
             terms={filteredTerms}
             selectedTerm={selectedTerm}
@@ -195,6 +253,67 @@ const Sidebar = ({ terms }: Props) => {
       )}
     </div>
   );
+
+  if (mobile) {
+    return (
+      <div
+        className="flex flex-col gap-4 w-16 min-w-16 items-center divide-y-2 > * + * divide-gray-300"
+        style={{ minWidth: "48px" }}
+        onClick={toggleDrawer}
+      >
+        <Image
+          src="/small-logo-cmm.png"
+          alt="Logo Cercle des mycologues de Montréal"
+          width={36}
+          height={36}
+          className="pt-2.5 cursor-pointer"
+        />
+        <div className="flex w-full justify-center">
+          <Tooltip content={"Filtrer"}>
+            <Image
+              src="/search-svgrepo-com.svg"
+              width={36}
+              height={36}
+              alt="Filtrer"
+              className="pt-2.5 cursor-pointer"
+              onClick={() => filterRef.current?.focus()}
+            />
+          </Tooltip>
+        </div>
+        <div className="flex w-full text-center justify-center">
+          <Tooltip content={"Glossaire"}>
+            <div className="pt-2.5 cursor-pointer font-bold">A-Z</div>
+          </Tooltip>
+        </div>
+        {!path.endsWith("/planche") && (
+          <div className="flex w-full justify-center">
+            <Tooltip content={"Accès aux planches"}>
+              <Image
+                src={Planche}
+                alt="Planches"
+                width={36}
+                height={36}
+                className="pt-2.5 cursor-pointer"
+                onClick={goToPlanche}
+              />
+            </Tooltip>
+          </div>
+        )}
+        <Drawer
+          className="flex flex-col"
+          open={isOpen}
+          onClose={toggleDrawer}
+          direction="left"
+          overlayOpacity={0}
+          style={{ width: "225px" }}
+        >
+          {sidebar}
+        </Drawer>
+      </div>
+    );
+  }
+
+  return <div className="flex flex-col">{sidebar}</div>;
 };
 
 export default Sidebar;

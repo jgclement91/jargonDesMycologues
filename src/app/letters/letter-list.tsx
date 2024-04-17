@@ -38,7 +38,7 @@ const letters = [
 
 const LetterList = ({ onLetterSelect }: Props) => {
   return (
-    <div className="h-full w-52">
+    <div className="w-full letter-list">
       <div className="divide-y divide-gray-400">
         {letters.map((letter) => (
           <LetterListItem
