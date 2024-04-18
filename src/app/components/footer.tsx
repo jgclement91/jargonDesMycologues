@@ -6,9 +6,9 @@ const Footer = () => {
   const mobile = useMediaQuery("(max-width:640px)");
 
   return (
-    <div className={`bg-black text-white text-xs text-center pt-1 ${mobile ? "pb-12" : "pb-1"}`}>
-      <p>Glossaire illustré par Jean Després</p>
-      <p>Collaboration : P. Dauzet, M. Ledecq, C. Marchand et J. Clément</p>
+    <div className={`bg-black text-white text-xs text-center pt-1 ${mobile ? "pb-14" : "pb-1"}`}>
+      <p>Glossaire illustré par <span className="whitespace-nowrap">Jean Després</span></p>
+      <p>Collaboration : <span className="whitespace-nowrap">P. Dauzet</span>, <span className="whitespace-nowrap">M. Ledecq</span>, <span className="whitespace-nowrap">C. Marchand</span> et <span className="whitespace-nowrap">J. Clément</span></p>
     </div>
   );
 };

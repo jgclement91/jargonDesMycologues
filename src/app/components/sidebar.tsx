@@ -151,7 +151,6 @@ const Sidebar = ({ terms }: Props) => {
       );
     }
     else {
-      console.log("allo");
       setFilteredTerms([]);
       displayLetters();
     }
