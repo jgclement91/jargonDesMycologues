@@ -28,7 +28,6 @@ const TermIllustrations = ({exampleImageUrl, exampleDescription, schemaImageUrl}
             src={schemaImageUrl}
             width={imageSize}
             height={imageSize}
-
           />
         </div>
       </div>

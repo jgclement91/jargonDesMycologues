@@ -1,5 +1,7 @@
 'use client';
 
+import { useMediaQuery } from "usehooks-ts";
+
 import TermListItem from "./term-list-item";
 import "./term-list.css";
 
@@ -15,9 +17,10 @@ function distinct(value: string, index: number, array: Array<string>) {
 }
 
 const TermList = ({ terms, selectedTerm, onTermSelect, scrollToTerm }: Props) => {
+  const mobile = useMediaQuery("(max-width:640px)");
 
   return (
-    <div className="w-52 w-full term-list">
+    <div className={`w-52 w-full ${mobile ? "mobile-" : ""}term-list`}>
       <div className="divide-y divide-gray-400">
         {terms.filter(distinct).map((term, index) => (
           <TermListItem
