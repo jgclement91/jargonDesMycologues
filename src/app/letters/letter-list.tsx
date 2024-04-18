@@ -1,7 +1,11 @@
+'use client';
+
+import { useMediaQuery } from "usehooks-ts";
+import { usePathname } from "next/navigation";
+
 import LetterListItem from "./letter-list-item";
 
 import "./letter-list.css";
-import LetterSelect from "./letter-select";
 
 type Props = {
   onLetterSelect: (letter: string) => void;
@@ -37,8 +41,11 @@ const letters = [
 ];
 
 const LetterList = ({ onLetterSelect }: Props) => {
+  const mobile = useMediaQuery("(max-width:640px)");
+  const path = decodeURIComponent(usePathname());
+
   return (
-    <div className="w-full letter-list">
+    <div className={`w-full ${mobile && !path.startsWith("/planche") ? "mobile-" : ""}letter-list`}>
       <div className="divide-y divide-gray-400">
         {letters.map((letter) => (
           <LetterListItem

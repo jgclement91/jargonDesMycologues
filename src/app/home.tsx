@@ -10,7 +10,6 @@ import { useMediaQuery } from "usehooks-ts";
 import "./home.css";
 
 const Home = () => {
-  const small = useMediaQuery("(min-width:640px)");
   const large = useMediaQuery("(min-width:1024px)");
   const imagesHeight = large ? 500 : 400;
   const imageClass = large ? "large-image" : "small-image";
