@@ -42,7 +42,7 @@ const TermDetails = ({
           </span>
         )}
         <div className="pt-2 px-4 sm:px-8">
-          <p className="text-justify font-semibold leading-loose">
+          <p className="text-right sm:text-justify font-semibold leading-loose">
             <PortableTextComponent value={definition} />
           </p>
         </div>
