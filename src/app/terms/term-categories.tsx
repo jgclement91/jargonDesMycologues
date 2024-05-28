@@ -17,6 +17,7 @@ import ScienceIcon from "../images/categoryIcons/Science.gif";
 import SuffixeIcon from "../images/categoryIcons/Suffixe.gif";
 import ToxinesEtSyndromesIcon from "../images/categoryIcons/Toxines-et-syndromes.gif";
 import ToucherIcon from "../images/categoryIcons/Toucher.gif";
+import PharmacieIcon from "../images/categoryIcons/Pharmacie.gif";
 
 import "./term-categories.css"
 
@@ -130,6 +131,12 @@ categoryDictionary.set("toucher", {
   dimensions: { width: 55, height: 33 },
   description:
     "Caractère observable au toucher ou à la manipulation, tel que la viscosité ou la consistance",
+});
+categoryDictionary.set("pharmacologie", {
+  icon: PharmacieIcon,
+  text: "Pharmacologie",
+  dimensions: { width: 55, height: 55 },
+  description: "Terme relatif à la pharmacologie des champignons dits médicinaux",
 });
 
 type Props = {
