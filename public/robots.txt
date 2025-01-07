@@ -1,3 +1,4 @@
 # Allow all crawlers
 User-agent: *
 Allow: /
+Sitemap: https://jargon-des-mycologues.vercel.app/sitemap3.xml
