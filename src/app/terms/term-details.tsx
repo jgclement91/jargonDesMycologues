@@ -30,8 +30,8 @@ const TermDetails = ({
   return (
     <div className="flex flex-col flex-grow">
       <div className="flex flex-col py-4 bg-slate-200 flex-grow">
-        <div className="flex text-green-600 text-3xl min-[380px]:text-4xl sm:text-5xl font-semibold px-4 sm:px-8 items-center">
-          {term}
+        <div className="flex items-center">
+          <h1 className="text-green-600 text-3xl min-[380px]:text-4xl sm:text-5xl font-semibold px-4 sm:px-8">{term}</h1>
           {categories && categories.length > 0 && (
             <TermCategories categories={categories} />
           )}
@@ -42,9 +42,9 @@ const TermDetails = ({
           </span>
         )}
         <div className="pt-2 px-4 sm:px-8">
-          <p className="text-left sm:text-justify font-semibold leading-loose">
+          <h2 className="text-left sm:text-justify font-semibold leading-loose">
             <PortableTextComponent value={definition} />
-          </p>
+          </h2>
         </div>
       </div>
       <TermIllustrations

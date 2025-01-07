@@ -31,7 +31,7 @@ const Home = () => {
             "flex-grow h-3/4 pt-8 flex flex-col gap-4 font-bold text-center px-4 sm:px-2 lg:leading-9 lg:px-4"
           }
         >
-          <p>
+          <h1>
             Bien souvent, les glossaires de mycologie s’adressent à des initiés
             ou à des amateurs familiers avec le vocabulaire de la botanique, du
             grec ancien et du latin et parfois même avec le langage de la
@@ -48,7 +48,7 @@ const Home = () => {
             complexes. Pour pallier cette difficulté, nous avons implanté des
             hyperliens à même le texte permettant d’accéder d’un simple clic de
             souris aux définitions.
-          </p>
+          </h1>
           <p>
             Chacun des éléments de ce glossaire s’accompagne de un ou deux
             symboles graphiques indiquant le ou les contextes d’utilisation du
