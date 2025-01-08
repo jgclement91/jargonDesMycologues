@@ -11,7 +11,7 @@ import "./layout.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Page d'accueil - Jargon des mycologues",
+  title: "Page d'accueil",
   description: "Un glossaire illustré des champignons conçu par Jean Després",
 };
 

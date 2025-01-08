@@ -30,7 +30,7 @@ export async function generateMetadata(
     }
 
     return {
-      title: `${data.term} - Jargon des mycologues`,
+      title: `${data.term}`,
     }
   }
 

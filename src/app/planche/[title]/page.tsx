@@ -26,7 +26,7 @@ export async function generateMetadata(
   const title = decodeURIComponent(params.title).replaceAll("-", " ").split(".")[0];
 
   return {
-    title: `Planche de ${decodeURIComponent(title)} - Jargon des mycologues`,
+    title: `Planche de ${decodeURIComponent(title)}`,
   }
 }
 
