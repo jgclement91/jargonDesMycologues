@@ -27,7 +27,8 @@ export default async function RootLayout({
       <link
         href="https://fonts.cdnfonts.com/css/tex-gyre-chorus"
         rel="stylesheet"
-      />
+      ></link>
+      <link rel="canonical" href="https://jargon-des-mycologues.org/"></link>
       <body className={`${inter.className} overflow-y-hidden`}>
         <div className="app divide-x > * + *">
           <Sidebar
