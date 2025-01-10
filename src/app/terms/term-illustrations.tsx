@@ -12,9 +12,6 @@ type Props = {
   };
 
 const TermIllustrations = ({exampleImageUrl, exampleDescription, schemaImageUrl}: Props) => {
-  const small = useMediaQuery("(min-width: 640px)");
-  const imageSize = small ? 350 : 300;
-
     return (
     <div className="flex flex-grow-[10] md:min-w-[500px] justify-around py-3 items-center flex-col lg:flex-row">
     {schemaImageUrl && (
@@ -24,10 +21,11 @@ const TermIllustrations = ({exampleImageUrl, exampleDescription, schemaImageUrl}
             Schéma
           </span>
           <Image
+            className="w-[300px] sm:w-[350px]"
             alt="Schema"
             src={schemaImageUrl}
-            width={imageSize}
-            height={imageSize}
+            width={350}
+            height={350}
           />
         </div>
       </div>
@@ -38,10 +36,11 @@ const TermIllustrations = ({exampleImageUrl, exampleDescription, schemaImageUrl}
           Exemple
         </span>
         <Image
+          className="w-[300px] sm:w-[350px]"
           alt="Example"
           src={exampleImageUrl}
-          width={imageSize}
-          height={imageSize}
+          width={350}
+          height={350}
         />
         <div className="w-[300px] text-sm font-bold pt-2.5">
           <PortableTextComponent value={exampleDescription} />

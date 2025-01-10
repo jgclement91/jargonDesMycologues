@@ -22,13 +22,42 @@ export default async function RootLayout({
 }) {
   const allTerms = await fetchTermList();
 
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://jargon-des-mycologues.org",
+    "name": "Jargon des mycologues",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Cercle des mycologues de Montréal",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://jargon-des-mycologues.org/icon.png",
+        "width": 512,
+        "height": 512,
+      },
+    },
+  };
+
+
   return (
     <html lang="en">
-      <link
-        href="https://fonts.cdnfonts.com/css/tex-gyre-chorus"
-        rel="stylesheet"
-      ></link>
-      <link rel="canonical" href="https://jargon-des-mycologues.org/"></link>
+      <head>
+        <link
+          href="https://fonts.cdnfonts.com/css/tex-gyre-chorus"
+          rel="stylesheet"
+        ></link>
+        <link rel="canonical" href="https://jargon-des-mycologues.org/"></link>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" href="/icon.png" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schemaData),
+          }}
+        />
+      </head>
       <body className={`${inter.className} overflow-y-hidden`}>
         <div className="app divide-x > * + *">
           <Sidebar
