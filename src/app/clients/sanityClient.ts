@@ -41,21 +41,35 @@ export async function getAllPlanches(imageWidth: number): Promise<Planche[]> {
   const query = '*[_type == "planche"]';
   const planches = await _sanityClient.fetch(query);
 
-  return planches.map((planche: any) => ({
-    title: planche.title,
-    label: planche.label,
-    categories: planche.categories,
-    image: getImageUrl(planche.image, imageWidth),
-  })).sort((a: Planche, b: Planche) => a.title.localeCompare(b.title));
+  return planches
+    .map((planche: any) => ({
+      title: planche.title,
+      label: planche.label,
+      categories: planche.categories,
+      image: getImageUrl(planche.image, imageWidth),
+    }))
+    .sort((a: Planche, b: Planche) => a.title.localeCompare(b.title));
 }
 
 type Term = {
   term: string;
   definition: any;
   synonymsRichText: any;
-  example: string;
+  example: {
+    _type: string;
+    _key: string;
+    asset: {
+      _ref: string;
+    };
+  };
   exampleDescription: any;
-  schema: string;
+  schema: {
+    _type: string;
+    _key: string;
+    asset: {
+      _ref: string;
+    };
+  };
   categories: string[];
 };
 

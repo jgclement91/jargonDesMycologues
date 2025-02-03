@@ -12,7 +12,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Page d'accueil",
-  description: "Un glossaire illustré des champignons conçu par Jean Després",
+  description: `Un glossaire illustré des champignons conçu par Jean Després`,
+  alternates: {
+    canonical: `https://www.jargon-des-mycologues.org/`,
+  }
 };
 
 export default async function RootLayout({
@@ -47,7 +50,6 @@ export default async function RootLayout({
           href="https://fonts.cdnfonts.com/css/tex-gyre-chorus"
           rel="stylesheet"
         ></link>
-        <link rel="canonical" href="https://www.jargon-des-mycologues.org/"></link>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" type="image/png" href="/icon.png" />
         <link rel="apple-touch-icon" href="/icon.png" />

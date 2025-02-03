@@ -8,6 +8,7 @@ import Header from "./components/header";
 import { useMediaQuery } from "usehooks-ts";
 
 import "./home.css";
+import { Metadata } from "next";
 
 const Home = () => {
   const large = useMediaQuery("(min-width:1024px)");
