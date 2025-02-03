@@ -65,6 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `https://www.jargon-des-mycologues.org/glossaire/${term}`,
     },
+    robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
   };
 }
 
