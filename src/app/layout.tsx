@@ -13,6 +13,19 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Page d'accueil",
   description: `Un glossaire illustré des champignons conçu par Jean Després`,
+  openGraph: {
+    title: "Page d'accueil",
+    description: `Un glossaire illustré des champignons conçu par Jean Després`,
+    images: [
+      {
+        url: "https://www.jargon-des-mycologues.org/logo-cmm.png",
+        width: 700,
+        height: 485,
+        alt: "Logo du Cercle des mycologues de Montréal",
+      }
+    ],
+    type: "website"
+  },
   alternates: {
     canonical: `https://www.jargon-des-mycologues.org/`,
   }

@@ -61,6 +61,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `Glossaire - ${term}`,
       url: `https://www.jargon-des-mycologues.org/glossaire/${term}`,
       images: images,
+      type: "article"
     },
     alternates: {
       canonical: `https://www.jargon-des-mycologues.org/glossaire/${term}`,
