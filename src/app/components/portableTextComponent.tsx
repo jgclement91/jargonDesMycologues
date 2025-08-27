@@ -8,7 +8,7 @@ const myPortableTextComponents: PortableTextComponents  = {
 
           if (value.href.startsWith('http')) {
             return (
-              <a href={value.href} target="_blank">
+              <a href={value.href} target="_blank " rel="noopener noreferrer">
                 {children}
               </a>
             )

@@ -6,12 +6,12 @@ type Props = {
 };
 
 const LetterListItem = ({ letter, onLetterSelect }: Props) => {
-  var classes = "flex items-center pl-6 py-3 whitespace-pre-line no-underline hover:bg-slate-100 hover:bg-slate-100 select-none cursor-pointer";
+  const classes = "w-full text-left flex items-center pl-6 py-3 whitespace-pre-line select-none hover:bg-slate-100 cursor-pointer bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500";
 
   return (
-    <a className={classes} key={letter} onClick={onLetterSelect}>
+    <button type="button" className={classes} onClick={onLetterSelect} aria-label={`Lettre ${letter}`}>
       {letter}
-    </a>
+    </button>
   );
 };
 

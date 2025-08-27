@@ -21,6 +21,7 @@ const Header = () => {
         <Image
           className="h-16 ml-2 self-center cursor-pointer"
           alt="Accueil"
+          aria-label="Aller à l'accueil"
           src="/home-4-svgrepo-com.svg"
           width={64}
           height={64}

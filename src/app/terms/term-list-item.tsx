@@ -16,15 +16,15 @@ const TermListItem = ({
   selected,
   onTermSelect,
   scrollToTerm,
-  isFirstTerm
+  isFirstTerm,
 }: Props) => {
-  var classes = `flex items-center pl-6 py-3 whitespace-pre-line no-underline select-none ${
-    selected
-      ? "hover:bg-green-200 selected-term"
-      : "hover:bg-slate-100 cursor-pointer"
-  }`;
+  const classes = `w-full text-left flex items-center pl-6 py-3 whitespace-pre-line select-none
+    ${selected
+      ? "bg-[#e1ffe7] hover:bg-[#b4ffc3] focus:bg-[#b4ffc3]"
+      : "hover:bg-slate-100 cursor-pointer"}
+    bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`;
 
-  const ref = useRef<null | HTMLAnchorElement>(null);
+  const ref = useRef<HTMLButtonElement | null>(null);
 
   useTimeout(() => {
     if ((scrollToTerm && selected) || isFirstTerm) {
@@ -37,9 +37,15 @@ const TermListItem = ({
   };
 
   return (
-    <a ref={ref} className={classes} key={term} onClick={() => handleOnClick()}>
+    <button
+      ref={ref}
+      type="button"
+      className={classes}
+      onClick={handleOnClick}
+      aria-current={selected ? "true" : undefined}
+    >
       {term}
-    </a>
+    </button>
   );
 };
 

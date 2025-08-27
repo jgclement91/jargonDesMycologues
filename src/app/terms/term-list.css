@@ -7,12 +7,3 @@
     height: calc(100vh - 20.5rem);
     overflow-y: auto;
 }
-
-
-.selected-term {
-    background-color: #e1ffe7;
-
-    &--hover {
-        background-color: #b4ffc3;
-    }
-}
