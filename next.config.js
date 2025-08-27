@@ -4,13 +4,15 @@ const nextConfig = {
     domains: ["cdn.sanity.io"],
     unoptimized: true,
   },
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "destination": "https://jargon-des-mycologues.org/$1",
-      "permanent": true
-    }
-  ]
+  async redirects() {
+    return [
+      {
+        source: "/(.*)",
+        destination: "https://jargon-des-mycologues.org/$1",
+        permanent: true
+      }
+    ];
+  }
 };
 
 module.exports = nextConfig;
