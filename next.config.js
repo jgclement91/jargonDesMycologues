@@ -3,15 +3,6 @@ const nextConfig = {
   images: {
     domains: ["cdn.sanity.io"],
     unoptimized: true,
-  },
-  async redirects() {
-    return [
-      {
-        source: "/(.*)",
-        destination: "https://jargon-des-mycologues.org/$1",
-        permanent: true
-      }
-    ];
   }
 };
 

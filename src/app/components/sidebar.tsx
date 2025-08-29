@@ -48,23 +48,48 @@ const Sidebar = ({ terms }: Props) => {
     setIsOpen((prevState) => !prevState);
   };
 
-  const localeIncludes = (string: string, searchString: string) => {
-    const stringLength = string.length;
-    const searchStringLength = searchString.length;
-    const lengthDiff = stringLength - searchStringLength;
 
-    for (let i = 0; i <= lengthDiff; i++) {
-      if (
-        string
-          .substring(i, i + searchStringLength)
-          .localeCompare(searchString, "fr", { sensitivity: "base" }) === 0
-      ) {
-        return true;
-      }
+  const collator = new Intl.Collator("fr", { sensitivity: "base" });
+  const includesInsensitive = (haystack: string, needle: string) => {
+    if (!needle) {
+      return true;
     }
-
-    return false;
+    const removeDiacritics = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const normHaystack = removeDiacritics(haystack);
+    const normNeedle = removeDiacritics(needle);
+    return normHaystack.toLowerCase().includes(normNeedle.toLowerCase());
   };
+
+
+  // Debounce filter input
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (termFilter) {
+      setSelectedLetter("");
+      setShowLetterSelect(true);
+      setShowLetters(false);
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+
+      debounceTimeout.current = setTimeout(() => {
+        const termsContainingFilter = terms.filter((t) => includesInsensitive(t, termFilter));
+        const termsStartingWithFilter = termsContainingFilter.filter((t) =>
+          collator.compare(t.substring(0, termFilter.length), termFilter) === 0
+        );
+        setFilteredTerms([
+          ...termsStartingWithFilter,
+          ...termsContainingFilter.filter((t) => !termsStartingWithFilter.includes(t)),
+        ]);
+      }, 200);
+
+      return () => {
+        if (debounceTimeout.current) {
+          clearTimeout(debounceTimeout.current);
+        }
+      };
+    }
+  }, [termFilter, terms]);
 
   useEffect(() => {
     if (termFilter || selectedLetter) {
@@ -93,30 +118,7 @@ const Sidebar = ({ terms }: Props) => {
     }
   }, [path, termFilter]);
 
-  useEffect(() => {
-    if (termFilter) {
-      setSelectedLetter("");
-      setShowLetterSelect(true);
-      setShowLetters(false);
-      var termsContainingFilter = terms.filter((t) =>
-        localeIncludes(t, termFilter)
-      );
-
-      const termsStartingWithFilter = termsContainingFilter.filter(
-        (t) =>
-          t
-            .substring(0, termFilter.length)
-            .localeCompare(termFilter, "fr", { sensitivity: "base" }) === 0
-      );
-
-      setFilteredTerms([
-        ...termsStartingWithFilter,
-        ...termsContainingFilter.filter(
-          (t) => !termsStartingWithFilter.includes(t)
-        ),
-      ]);
-    }
-  }, [termFilter]);
+  // (Debounced filter logic moved above)
 
   useEffect(() => {
     if (termFilter) {
@@ -135,8 +137,7 @@ const Sidebar = ({ terms }: Props) => {
             }) === 0
         )
       );
-    }
-    else if (selectedTerm) {
+    } else if (selectedTerm) {
       const letter = selectedTerm[0];
       setFilteredTerms(
         terms.filter(
@@ -149,8 +150,7 @@ const Sidebar = ({ terms }: Props) => {
             }) === 0
         )
       );
-    }
-    else {
+    } else {
       setFilteredTerms([]);
       displayLetters();
     }
@@ -205,14 +205,14 @@ const Sidebar = ({ terms }: Props) => {
           onClick={goToPlanche}
         >
           <div className="place-content-center">
-          <Image
-            src={Planche}
-            alt="Planches"
-            width={36}
-            height={36}
-            className="cursor-pointer"
-            onClick={goToPlanche}
-          />
+            <Image
+              src={Planche}
+              alt="Planches"
+              width={36}
+              height={36}
+              className="cursor-pointer"
+              onClick={goToPlanche}
+            />
           </div>
           <a className="text-md font-bold h-full place-content-center">Accès aux planches</a>
         </div>
