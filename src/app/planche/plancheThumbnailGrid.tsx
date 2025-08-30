@@ -1,17 +1,25 @@
 "use client";
 
-import { Planche } from "../clients/sanityClient";
+import type { Planche } from "../clients/sanityClient";
 import PlancheThumbnail from "./plancheThumbnail";
+
+type ThumbSize = {
+  key: string;
+  label: string;
+  width: number;
+  height: number;
+};
 
 type Props = {
   planches: Planche[];
+  thumbSize?: ThumbSize;
 };
 
 function distinct(value: string, index: number, array: Array<string>) {
   return array.indexOf(value) === index;
 }
 
-const PlancheThumbnailGrid = ({ planches }: Props) => {
+const PlancheThumbnailGrid = ({ planches, thumbSize }: Props) => {
   const plancheCategories = planches
     .map((planche) => planche.categories)
     .flat()
@@ -34,10 +42,16 @@ const PlancheThumbnailGrid = ({ planches }: Props) => {
         return (
           <div key={pluralizedCategory} className="text-center my-8">
             <h2 className="text-2xl font-bold	">{pluralizedCategory}</h2>
-            <div className={`flex flex-wrap gap-4 justify-center items-center mt-4 mb-12 `}>
-              {plancheByCategory(category).map((planche) =>
-                PlancheThumbnail(planche.image, planche.label, planche.title)
-              )}
+            <div className={`flex flex-wrap gap-4 justify-center items-center mt-4 mb-12`}>
+              {plancheByCategory(category).map((planche) => {
+                const key = (thumbSize?.key || "small") as keyof typeof planche.images;
+                return PlancheThumbnail(
+                  planche.images[key],
+                  planche.label,
+                  planche.title,
+                  thumbSize
+                );
+              })}
             </div>
           </div>
         );

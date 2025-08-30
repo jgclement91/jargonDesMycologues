@@ -18,11 +18,10 @@ const TermListItem = ({
   scrollToTerm,
   isFirstTerm,
 }: Props) => {
-  const classes = `w-full text-left flex items-center pl-6 py-3 whitespace-pre-line select-none
+  const classes = `w-full text-left flex items-center pl-6 py-3 whitespace-pre-line border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500
     ${selected
       ? "bg-[#e1ffe7] hover:bg-[#b4ffc3] focus:bg-[#b4ffc3]"
-      : "hover:bg-slate-100 cursor-pointer"}
-    bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`;
+      : "hover:bg-slate-100 cursor-pointer"}`;
 
   const ref = useRef<HTMLButtonElement | null>(null);
 

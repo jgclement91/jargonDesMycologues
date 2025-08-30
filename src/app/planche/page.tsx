@@ -1,3 +1,10 @@
+// Thumbnail size options for all usages (server and client)
+export const sizeOptions = [
+  { key: "small", label: "Petite", width: 400, height: 247 },
+  { key: "medium", label: "Moyenne", width: 550, height: 340 },
+  { key: "large", label: "Grande", width: 700, height: 433 },
+  { key: "xlarge", label: "Très grande", width: 850, height: 525 },
+];
 import Footer from "../components/footer";
 import Header from "../components/header";
 import { getAllPlanches, getImageUrl } from "@/app/clients/sanityClient";
@@ -40,16 +47,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const PlancheList = async () => {
-  const planches = await getAllPlanches(400);
 
-  return (
-    <div className="h-full flex flex-col overflow-y-auto">
-      <Header />
-      <PlancheThumbnailGrid planches={planches} />
-      <Footer />
-    </div>
-  );
+import dynamic from "next/dynamic";
+
+const PlancheListClient = dynamic(() => import("./PlancheListClient"), { ssr: false });
+
+
+const PlancheList = async () => {
+  const planches = await getAllPlanches();
+  return <PlancheListClient planches={planches} sizeOptions={sizeOptions} />;
 };
 
 export default PlancheList;
