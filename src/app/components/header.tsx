@@ -28,8 +28,8 @@ const Header = () => {
           onClick={goToHome}
         />
       )}
-      <div className="align-middle align-center mr-4 mr-8 pt-4 pb-8 flex-grow">
-        <p className="text-white text-4xl min-[380px]:text-5xl sm:text-7xl  font-semibold text-center title">
+      <div className="align-middle align-center min-[380px]:mr-4 mr-8 content-center sm:pt-4 sm:pb-8 flex-grow">
+        <p className="text-white min-[300px]:text-2xl min-[400px]:text-3xl text-4xl md:text-7xl font-semibold text-center title">
           Le jargon des mycologues
         </p>
       </div>

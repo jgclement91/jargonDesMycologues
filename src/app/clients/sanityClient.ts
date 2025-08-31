@@ -52,7 +52,7 @@ export async function getAllPlanches(): Promise<Planche[]> {
       label: planche.label,
       categories: planche.categories,
       images: {
-        mobile: getImageUrl(planche.image, 350),
+        mobile: getImageUrl(planche.image, 340),
         small: getImageUrl(planche.image, 400),
         medium: getImageUrl(planche.image, 550),
         large: getImageUrl(planche.image, 700),
