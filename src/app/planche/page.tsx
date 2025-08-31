@@ -48,14 +48,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 
-import dynamic from "next/dynamic";
-
-const PlancheListClient = dynamic(() => import("./PlancheListClient"), { ssr: false });
-
 
 const PlancheList = async () => {
   const planches = await getAllPlanches();
-  return <PlancheListClient planches={planches} sizeOptions={sizeOptions} />;
+    return (
+    <div className="h-full flex flex-col overflow-y-auto">
+      <Header />
+      <PlancheThumbnailGrid planches={planches} sizeOptions={sizeOptions} />
+      <Footer />
+    </div>
+  );
 };
 
 export default PlancheList;
