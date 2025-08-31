@@ -2,10 +2,10 @@
 
 import type { Planche } from "../clients/sanityClient";
 import PlancheThumbnail from "./plancheThumbnail";
+import { sizeOptions } from "./sizeOptions";
 import ThumbnailSizeSelector from "./thumbnailSizeSelector";
 
-import { useState, useEffect } from "react";
-import { useMediaQuery } from "usehooks-ts";
+import { useState } from "react";
 
 type SizeOption = {
   key: string;
@@ -16,7 +16,6 @@ type SizeOption = {
 
 type Props = {
   planches: Planche[];
-  sizeOptions: SizeOption[];
 };
 
 function distinct(value: string, index: number, array: Array<string>) {
@@ -24,7 +23,7 @@ function distinct(value: string, index: number, array: Array<string>) {
 }
 
 
-const PlancheThumbnailGrid = ({ planches, sizeOptions }: Props) => {
+const PlancheThumbnailGrid = ({ planches }: Props) => {
   const [sizeIdx, setSizeIdx] = useState(0);
 
   const plancheCategories = planches

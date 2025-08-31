@@ -1,13 +1,6 @@
-// Thumbnail size options for all usages (server and client)
-export const sizeOptions = [
-  { key: "small", label: "Petite", width: 400, height: 247 },
-  { key: "medium", label: "Moyenne", width: 550, height: 340 },
-  { key: "large", label: "Grande", width: 700, height: 433 },
-  { key: "xlarge", label: "Très grande", width: 850, height: 525 },
-];
 import Footer from "../components/footer";
 import Header from "../components/header";
-import { getAllPlanches, getImageUrl } from "@/app/clients/sanityClient";
+import { getAllPlanches } from "@/app/clients/sanityClient";
 import PlancheThumbnailGrid from "./plancheThumbnailGrid";
 import { Metadata } from "next";
 
@@ -54,7 +47,7 @@ const PlancheList = async () => {
     return (
     <div className="h-full flex flex-col overflow-y-auto">
       <Header />
-      <PlancheThumbnailGrid planches={planches} sizeOptions={sizeOptions} />
+      <PlancheThumbnailGrid planches={planches}/>
       <Footer />
     </div>
   );
