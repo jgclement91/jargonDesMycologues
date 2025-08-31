@@ -1,5 +1,3 @@
-import exp from "constants";
-
 export type SizeOption = {
   key: string;
   label: string;
@@ -8,6 +6,7 @@ export type SizeOption = {
 };
 
 export const sizeOptions: SizeOption[] = [
+  { key: "mobile", label: "Mobile", width: 350, height: 216 },
   { key: "small", label: "Petite", width: 400, height: 247 },
   { key: "medium", label: "Moyenne", width: 550, height: 340 },
   { key: "large", label: "Grande", width: 700, height: 433 },

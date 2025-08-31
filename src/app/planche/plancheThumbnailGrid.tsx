@@ -1,18 +1,12 @@
 "use client";
 
+import { useMediaQuery } from "usehooks-ts";
 import type { Planche } from "../clients/sanityClient";
 import PlancheThumbnail from "./plancheThumbnail";
 import { sizeOptions } from "./sizeOptions";
 import ThumbnailSizeSelector from "./thumbnailSizeSelector";
 
-import { useState } from "react";
-
-type SizeOption = {
-  key: string;
-  label: string;
-  width: number;
-  height: number;
-};
+import { useEffect, useState } from "react";
 
 type Props = {
   planches: Planche[];
@@ -24,7 +18,13 @@ function distinct(value: string, index: number, array: Array<string>) {
 
 
 const PlancheThumbnailGrid = ({ planches }: Props) => {
-  const [sizeIdx, setSizeIdx] = useState(0);
+  const isMobile = useMediaQuery('(max-width: 640px)');
+
+  const [sizeIdx, setSizeIdx] = useState(isMobile ? 0 : 1);
+
+  useEffect(() => {
+    setSizeIdx(isMobile ? 0 : 1);
+  }, [isMobile]);
 
   const plancheCategories = planches
     .map((planche) => planche.categories)
@@ -43,16 +43,20 @@ const PlancheThumbnailGrid = ({ planches }: Props) => {
 
   return (
     <div className="overflow-y-auto flex flex-col sm:block">
-      <div className="w-full flex flex-col items-center mt-6 mb-2">
-        <ThumbnailSizeSelector
-          onSizeChange={(newSizeKey) => {
-            const newSizeIdx = sizeOptions.findIndex((opt) => opt.key === newSizeKey);
-            if (newSizeIdx !== -1) {
-              setSizeIdx(newSizeIdx);
-            }
-          }}
-        />
-      </div>
+      {
+        !isMobile && (
+          <div className="w-full flex flex-col items-center mt-6 mb-2">
+            <ThumbnailSizeSelector
+              onSizeChange={(newSizeKey) => {
+                const newSizeIdx = sizeOptions.findIndex((opt) => opt.key === newSizeKey);
+                if (newSizeIdx !== -1) {
+                  setSizeIdx(newSizeIdx);
+                }
+              }}
+            />
+          </div>
+        )
+      }
       {plancheCategories.map((category: string) => {
         const pluralizedCategory = puralizedCategoryDictionary[category];
         return (

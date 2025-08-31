@@ -1,35 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useMediaQuery } from "usehooks-ts";
-import { SizeOption, sizeOptions } from "./sizeOptions";
+import { sizeOptions } from "./sizeOptions";
 
 type Props = {
     onSizeChange: (newSizeKey: string) => void;
 };
 
 const ThumbnailSizeSelector = ({ onSizeChange }: Props) => {
-    const isMobile = useMediaQuery('(max-width: 640px)');
-    // On mobile, limit to 'large' as the largest option
-    const filteredSizeOptions = isMobile
-        ? sizeOptions.filter((opt: SizeOption) => opt.key !== 'xlarge')
-        : sizeOptions;
-
-    const [sizeIdx, setSizeIdx] = useState(0);
-    const minIdx = 0;
-    const maxIdx = filteredSizeOptions.length - 1;
-    const size = filteredSizeOptions[sizeIdx];
+    const [sizeIdx, setSizeIdx] = useState(1);
+    const minIdx = 1;
+    const maxIdx = sizeOptions.length - 1;
+    const size = sizeOptions[sizeIdx];
 
     const handleDecreaseSize = () => {
         const newSize = Math.max(sizeIdx - 1, minIdx);
         setSizeIdx(newSize);
-        onSizeChange(filteredSizeOptions[newSize].key);
+        onSizeChange(sizeOptions[newSize].key);
     };
 
     const handleIncreaseSize = () => {
         const newSize = Math.min(sizeIdx + 1, maxIdx);
         setSizeIdx(newSize);
-        onSizeChange(filteredSizeOptions[newSize].key);
+        onSizeChange(sizeOptions[newSize].key);
     };
 
     return (
