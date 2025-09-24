@@ -25,7 +25,13 @@ export type Planche = {
   title: string;
   label: string;
   categories: string[];
-  image: string;
+  images: {
+    mobile: string;
+    small: string;
+    medium: string;
+    large: string;
+    xlarge: string;
+  };
 };
 
 export async function getAllPlancheTitles(): Promise<PlancheTitle[]> {
@@ -37,16 +43,21 @@ export async function getAllPlancheTitles(): Promise<PlancheTitle[]> {
   }));
 }
 
-export async function getAllPlanches(imageWidth: number): Promise<Planche[]> {
+export async function getAllPlanches(): Promise<Planche[]> {
   const query = '*[_type == "planche"]';
   const planches = await _sanityClient.fetch(query);
-
   return planches
     .map((planche: any) => ({
       title: planche.title,
       label: planche.label,
       categories: planche.categories,
-      image: getImageUrl(planche.image, imageWidth),
+      images: {
+        mobile: getImageUrl(planche.image, 340),
+        small: getImageUrl(planche.image, 400),
+        medium: getImageUrl(planche.image, 550),
+        large: getImageUrl(planche.image, 700),
+        xlarge: getImageUrl(planche.image, 850),
+      },
     }))
     .sort((a: Planche, b: Planche) => a.title.localeCompare(b.title));
 }

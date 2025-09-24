@@ -1,6 +1,6 @@
 import Footer from "../components/footer";
 import Header from "../components/header";
-import { getAllPlanches, getImageUrl } from "@/app/clients/sanityClient";
+import { getAllPlanches } from "@/app/clients/sanityClient";
 import PlancheThumbnailGrid from "./plancheThumbnailGrid";
 import { Metadata } from "next";
 
@@ -40,13 +40,14 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const PlancheList = async () => {
-  const planches = await getAllPlanches(400);
 
-  return (
+
+const PlancheList = async () => {
+  const planches = await getAllPlanches();
+    return (
     <div className="h-full flex flex-col overflow-y-auto">
       <Header />
-      <PlancheThumbnailGrid planches={planches} />
+      <PlancheThumbnailGrid planches={planches}/>
       <Footer />
     </div>
   );

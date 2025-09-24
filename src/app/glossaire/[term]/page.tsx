@@ -3,6 +3,7 @@ import {
   fetchTerm,
   getImageUrl,
 } from "@/app/clients/sanityClient";
+import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
 import Content from "../../components/content";
@@ -47,13 +48,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const schemaImageHeight =
     schemaImageDimensions && schemaImageDimensions[1].split(".")[0];
   const schemaOg = data.schema && {
-    url: getImageUrl(data.schema, parseInt(exampleImageWidth)),
+    url: getImageUrl(data.schema, parseInt(schemaImageWidth)),
     width: schemaImageWidth,
     height: schemaImageHeight,
     alt: `Illustration du schema pour le terme ${term}`,
   };
 
-  const images = !!schemaOg ? schemaOg : !!exampleOg ? exampleOg : [];
+  const images = schemaOg ? [schemaOg] : exampleOg ? [exampleOg] : [];
   return {
     title: `Glossaire - ${term}`,
     description: `Découvrez la définition du terme "${term}" dans le jargon des mycologues.`,
@@ -81,11 +82,7 @@ const Page = async ({ params }: Props) => {
 
   const data = await fetchTerm(decodeURIComponent(params.term));
   if (!data) {
-    return (
-      <div className="app">
-        <div className="content">Terme introuvable</div>
-      </div>
-    );
+    notFound();
   }
   const exampleUrl = data.example && getImageUrl(data.example, 350);
   const schemaUrl = data.schema && getImageUrl(data.schema, 350);
