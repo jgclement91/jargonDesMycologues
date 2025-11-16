@@ -4,7 +4,6 @@ import { ArrowRight, Search, BookOpen, Eye } from "lucide-react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import { fetchTerm, getImageUrl } from "../clients/sanityClient";
-import PortableTextComponent from "../components/portableTextComponent";
 
 const POPULAR_TERMS = ["Ascome", "Collarié", "Pleurote", "Bolet", "Lactaire", "Alvéolé"];
 
@@ -48,7 +47,7 @@ const Page = async () => {
                   Explorer le Glossaire
                 </h1>
                 <p className="text-lg text-slate-600 leading-relaxed">
-                  Découvrez plus de 1200 termes mycologiques illustrés, accompagnés d'exemples
+                  Découvrez plus de 1200 termes mycologiques illustrés, accompagnés d&apos;exemples
                   et de schémas détaillés. Utilisez la navigation alphabétique ou la recherche
                   pour trouver rapidement ce que vous cherchez.
                 </p>
@@ -64,7 +63,7 @@ const Page = async () => {
                   </h3>
                   <p className="text-slate-600 text-sm">
                     Utilisez la barre de recherche dans le menu de navigation pour trouver instantanément
-                    n'importe quel terme du glossaire.
+                    n&apos;importe quel terme du glossaire.
                   </p>
                 </div>
 

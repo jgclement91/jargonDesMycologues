@@ -5,6 +5,8 @@ import {
   useEffect,
   useState,
   useRef,
+  useMemo,
+  useCallback,
 } from "react";
 
 import TermList from "../terms/term-list";
@@ -19,7 +21,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import LetterSelect from "../letters/letter-select";
-import Planche from "../images/sidebar/planche.png";
 
 import "react-modern-drawer/dist/index.css";
 import "./sidebar.css";
@@ -49,7 +50,7 @@ const Sidebar = ({ terms }: Props) => {
   };
 
 
-  const collator = new Intl.Collator("fr", { sensitivity: "base" });
+  const collator = useMemo(() => new Intl.Collator("fr", { sensitivity: "base" }), []);
   const includesInsensitive = (haystack: string, needle: string) => {
     if (!needle) {
       return true;
@@ -89,10 +90,10 @@ const Sidebar = ({ terms }: Props) => {
         }
       };
     }
-  }, [termFilter, terms]);
+  }, [termFilter, terms, collator]);
 
   useEffect(() => {
-    if (termFilter || selectedLetter) {
+    if (termFilter || selectedLetter || showLetters) {
       return;
     }
 
@@ -116,12 +117,23 @@ const Sidebar = ({ terms }: Props) => {
         )
       );
     }
-  }, [path, termFilter]);
+  }, [path, termFilter, pathSegments, selectedLetter, terms, showLetters]);
 
   // (Debounced filter logic moved above)
 
+  const displayLetters = useCallback(() => {
+    setSelectedLetter("");
+    setShowLetters(true);
+    setShowLetterSelect(false);
+    setTermFilter("");
+  }, []);
+
   useEffect(() => {
     if (termFilter) {
+      return;
+    }
+
+    if (showLetters) {
       return;
     }
 
@@ -150,18 +162,11 @@ const Sidebar = ({ terms }: Props) => {
             }) === 0
         )
       );
-    } else {
+    } else if (!selectedLetter && !selectedTerm) {
       setFilteredTerms([]);
-      displayLetters();
     }
-  }, [termFilter, selectedLetter]);
-
-  const displayLetters = () => {
-    setSelectedLetter("");
-    setShowLetters(true);
-    setShowLetterSelect(false);
-    setTermFilter("");
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [termFilter, selectedLetter, selectedTerm, terms]);
 
   const handleOnTermSelect = (term: string) => {
     let selectedTerm = term;

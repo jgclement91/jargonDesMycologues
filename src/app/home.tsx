@@ -39,7 +39,6 @@ const Home = () => {
 
         <div className="container px-4 md:px-6 mx-auto py-8 md:py-12 max-w-6xl relative z-10">
 
-          {/* Hero Section */}
           <section className="text-center mb-12 py-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-emerald-900 mb-4">
               Glossaire Mycologique Illustré
@@ -48,7 +47,6 @@ const Home = () => {
               Un glossaire vulgarisé avec hyperliens, exemples et planches anatomiques détaillées
             </p>
 
-            {/* Quick stats */}
             <div className="flex flex-wrap justify-center gap-8 text-center">
               <div>
                 <div className="text-3xl font-bold text-emerald-600">1200+</div>
@@ -65,7 +63,6 @@ const Home = () => {
             </div>
           </section>
 
-          {/* About Section */}
           <section className="mb-12">
             <div className="bg-white rounded-lg border border-slate-200 p-6 md:p-8 shadow-sm">
               <h2 className="text-2xl md:text-3xl font-medium text-emerald-800 mb-4">
@@ -73,7 +70,7 @@ const Home = () => {
               </h2>
               <div className="prose prose-lg prose-emerald max-w-none">
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  Bien souvent, les glossaires de mycologie s'adressent à des initiés
+                  Bien souvent, les glossaires de mycologie s&apos;adressent à des initiés
                   ou à des amateurs familiers avec le vocabulaire de la botanique, du
                   grec ancien et du latin et parfois même avec le langage de la
                   mycologie elle-même. Ainsi, les termes utilisés dans les définitions
@@ -82,28 +79,26 @@ const Home = () => {
                 </p>
                 <p className="text-slate-700 leading-relaxed">
                   Ce glossaire illustré et vulgarisé, contenant plus de 1200 termes,
-                  vise principalement à combler cette lacune par l'utilisation d'un
-                  langage accessible à tous et la présentation d'exemples, de schémas
+                  vise principalement à combler cette lacune par l&apos;utilisation d&apos;un
+                  langage accessible à tous et la présentation d&apos;exemples, de schémas
                   et de plus de 75 planches anatomiques, dont une soixantaine se
                   consacrent à des portraits de <span className="whitespace-nowrap">« famille ».</span> Toutefois,
-                  il demeure parfois nécessaire d'utiliser dans les définitions des
+                  il demeure parfois nécessaire d&apos;utiliser dans les définitions des
                   termes techniques se référant à certains concepts abstraits ou
                   complexes. Pour pallier cette difficulté, nous avons implanté des
-                  hyperliens à même le texte permettant d'accéder d'un simple clic aux
+                  hyperliens à même le texte permettant d&apos;accéder d&apos;un simple clic aux
                   définitions.
                 </p>
               </div>
             </div>
           </section>
 
-          {/* Features Grid */}
           <section className="mb-12">
             <h2 className="text-2xl font-medium text-emerald-800 mb-6 text-center">
               Ce que vous trouverez
             </h2>
 
             <div className="grid md:grid-cols-3 gap-6">
-              {/* Card 1: Terms */}
               <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-center mb-4">
                   <Image
@@ -122,7 +117,6 @@ const Home = () => {
                 </p>
               </div>
 
-              {/* Card 2: Plates */}
               <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-center mb-4">
                   <Image
@@ -141,7 +135,6 @@ const Home = () => {
                 </p>
               </div>
 
-              {/* Card 3: Icons */}
               <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-center mb-4">
                   <Image
@@ -156,14 +149,13 @@ const Home = () => {
                   Symboles contextuels
                 </h3>
                 <p className="text-slate-600 text-sm text-center">
-                  Chacun des éléments s'accompagne de symboles graphiques indiquant
-                  les contextes d'utilisation
+                  Chacun des éléments s&apos;accompagne de symboles graphiques indiquant
+                  les contextes d&apos;utilisation
                 </p>
               </div>
             </div>
           </section>
 
-          {/* CTA Section */}
           <section className="mb-12">
             <div className="bg-emerald-50 rounded-lg border border-emerald-200 p-8 text-center">
               <h2 className="text-2xl font-medium text-emerald-900 mb-4">
@@ -194,14 +186,13 @@ const Home = () => {
             </div>
           </section>
 
-          {/* Acknowledgments */}
           <section className="mb-8">
             <div className="bg-slate-50 rounded-lg border border-slate-200 p-6">
               <h3 className="text-lg font-medium text-slate-900 mb-3">
                 Remerciements
               </h3>
               <p className="text-sm text-slate-600">
-                L'équipe tient à remercier Michel Ashby pour son aide concernant
+                L&apos;équipe tient à remercier Michel Ashby pour son aide concernant
                 les champignons hypogés et Suzanne Béland pour ses explications
                 sur les myxomycètes.
               </p>
