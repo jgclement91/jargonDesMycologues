@@ -86,10 +86,12 @@ export default async function RootLayout({
         <link rel="apple-touch-icon" href="/icon.png" />
         {/* Next.js will inject metadata.other as custom tags */}
       </head>
-      <body className={`${inter.className} overflow-y-hidden`}>
-        <div className="app divide-x > * + *">
-          <Sidebar terms={sidebarTerms} />
-          {children}
+      <body className={`${inter.className}`}>
+        <div className="flex flex-col h-screen">
+          <div className="flex flex-1 overflow-hidden">
+            <Sidebar terms={sidebarTerms} />
+            {children}
+          </div>
         </div>
         <Analytics />
       </body>

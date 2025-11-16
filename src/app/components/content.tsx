@@ -7,8 +7,10 @@ type Props = {
   definition: any;
   synonyms: any;
   exampleImageUrl: any;
+  exampleImageUrlFull: any;
   exampleDescription: any;
   schemaImageUrl: any;
+  schemaImageUrlFull: any;
   categories: any;
 };
 
@@ -17,8 +19,10 @@ const Content = ({
   definition,
   synonyms,
   exampleImageUrl,
+  exampleImageUrlFull,
   exampleDescription,
   schemaImageUrl,
+  schemaImageUrlFull,
   categories
 }: Props) => {
   return (
@@ -30,8 +34,10 @@ const Content = ({
           definition={definition}
           synonyms={synonyms}
           exampleImageUrl={exampleImageUrl}
+          exampleImageUrlFull={exampleImageUrlFull}
           exampleDescription={exampleDescription}
           schemaImageUrl={schemaImageUrl}
+          schemaImageUrlFull={schemaImageUrlFull}
           categories={categories}
         />
       </div>

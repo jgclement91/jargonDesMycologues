@@ -1,11 +1,7 @@
 .letter-list {
-    height: calc(100vh - 17.5rem);
-    overflow-y: auto;
 }
 
 .mobile-letter-list {
-    height: calc(100vh - 20.5rem);
-    overflow-y: auto;
 }
 
 .selected-letter {

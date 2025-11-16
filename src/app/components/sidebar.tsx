@@ -10,13 +10,13 @@ import {
 import TermList from "../terms/term-list";
 import LetterList from "../letters/letter-list";
 import Logo from "./logo";
-import Tooltip from "@igloo-ui/tooltip";
-
 import Drawer from "react-modern-drawer";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import Input from "@igloo-ui/input";
 import { useMediaQuery } from "usehooks-ts";
+import { Search, BookOpen } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 import LetterSelect from "../letters/letter-select";
 import Planche from "../images/sidebar/planche.png";
@@ -197,59 +197,49 @@ const Sidebar = ({ terms }: Props) => {
   }
 
   const sidebar = (
-    <div className="flex flex-col" onClick={(e) => e.stopPropagation()}>
+    <div className="flex flex-col p-4 flex-1 overflow-hidden" onClick={(e) => e.stopPropagation()}>
       <Logo />
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+        <Input
+          ref={filterRef}
+          type="search"
+          placeholder="Rechercher..."
+          className="w-full pl-10"
+          value={termFilter}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setTermFilter(e.target.value)
+          }
+        />
+      </div>
       {!path.endsWith("/planche") && (
-        <div
-          className="h-12 pt-2 flex gap-2 self-center cursor-pointer place-content-center"
+        <Button
+          variant="link"
+          className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-3 px-0 justify-start"
           onClick={goToPlanche}
         >
-          <div className="place-content-center">
-            <Image
-              src={Planche}
-              alt="Planches"
-              width={36}
-              height={36}
-              className="cursor-pointer"
-              onClick={goToPlanche}
-            />
-          </div>
-          <a className="text-md font-bold h-full place-content-center">Accès aux planches</a>
-        </div>
+          <BookOpen className="h-4 w-4" />
+          Accès aux planches
+        </Button>
       )}
-      <Input
-        className="h-auto w-56"
-        ref={filterRef}
-        type="text"
-        placeholder="Filtrer"
-        prefixIcon={
-          <Image
-            src="/search-svgrepo-com.svg"
-            width={24}
-            height={24}
-            alt="Filtrer"
-          />
-        }
-        value={termFilter}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          setTermFilter(e.target.value)
-        }
-      />
       <LetterSelect hideButton={!showLetterSelect} onChange={displayLetters} />
-      {showLetters ? (
-        <div className="flex flex-1 items-center overflow-y-auto term-list">
-          <LetterList onLetterSelect={handleOnLetterSelect} />
+      <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden flex-1 min-h-0">
+        <div className="bg-[#006000] text-white px-3 py-2 text-center font-medium">
+          A → Z
         </div>
-      ) : (
-        <div className="flex flex-1 items-center overflow-y-auto">
-          <TermList
-            terms={filteredTerms}
-            selectedTerm={selectedTerm}
-            onTermSelect={handleOnTermSelect}
-            scrollToTerm={!termFilter}
-          />
+        <div className="overflow-y-auto flex-1">
+          {showLetters ? (
+            <LetterList onLetterSelect={handleOnLetterSelect} />
+          ) : (
+            <TermList
+              terms={filteredTerms}
+              selectedTerm={selectedTerm}
+              onTermSelect={handleOnTermSelect}
+              scrollToTerm={!termFilter}
+            />
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 
@@ -268,34 +258,20 @@ const Sidebar = ({ terms }: Props) => {
           className="pt-2.5 cursor-pointer"
         />
         <div className="flex w-full justify-center">
-          <Tooltip content={"Filtrer"}>
-            <Image
-              src="/search-svgrepo-com.svg"
-              width={36}
-              height={36}
-              alt="Filtrer"
-              className="pt-2.5 cursor-pointer"
-              onClick={() => filterRef.current?.focus()}
-            />
-          </Tooltip>
+          <Search
+            className="pt-2.5 cursor-pointer h-9 w-9 text-slate-600"
+            onClick={() => filterRef.current?.focus()}
+          />
         </div>
         <div className="flex w-full text-center justify-center">
-          <Tooltip content={"Glossaire"}>
-            <div className="pt-2.5 cursor-pointer font-bold">A-Z</div>
-          </Tooltip>
+          <div className="pt-2.5 cursor-pointer font-bold">A-Z</div>
         </div>
         {!path.endsWith("/planche") && (
           <div className="flex w-full justify-center">
-            <Tooltip content={"Accès aux planches"}>
-              <Image
-                src={Planche}
-                alt="Planches"
-                width={36}
-                height={36}
-                className="pt-2.5 cursor-pointer"
-                onClick={goToPlanche}
-              />
-            </Tooltip>
+            <BookOpen
+              className="pt-2.5 cursor-pointer h-9 w-9 text-slate-600"
+              onClick={goToPlanche}
+            />
           </div>
         )}
         <Drawer
@@ -303,8 +279,8 @@ const Sidebar = ({ terms }: Props) => {
           open={isOpen}
           onClose={toggleDrawer}
           direction="left"
-          overlayOpacity={0}
-          style={{ width: "225px" }}
+          overlayOpacity={0.3}
+          style={{ width: "280px" }}
         >
           {sidebar}
         </Drawer>
@@ -312,7 +288,7 @@ const Sidebar = ({ terms }: Props) => {
     );
   }
 
-  return <div className="flex flex-col">{sidebar}</div>;
+  return <div className="flex flex-col w-64 shrink-0 border-r">{sidebar}</div>;
 };
 
 export default Sidebar;

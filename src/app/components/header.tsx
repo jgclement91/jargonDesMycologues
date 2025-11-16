@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import "./header.css"
 
@@ -16,24 +18,26 @@ const Header = () => {
   };
 
   return (
-    <div className="bg-green-600 flex align-middle">
-      {displayHome && (
-        <Image
-          className="h-16 ml-2 self-center cursor-pointer"
-          alt="Accueil"
-          aria-label="Aller à l'accueil"
-          src="/home-4-svgrepo-com.svg"
-          width={64}
-          height={64}
-          onClick={goToHome}
-        />
-      )}
-      <div className="align-middle align-center min-[380px]:mr-4 mr-8 content-center sm:pt-4 sm:pb-8 flex-grow">
-        <p className="text-white min-[300px]:text-2xl min-[400px]:text-3xl text-4xl md:text-7xl font-semibold text-center title">
-          Le jargon des mycologues
-        </p>
+    <header className="py-4 border-b border-[#004000]" style={{ backgroundColor: "#006000" }}>
+      <div className="container px-4 md:px-6 mx-auto max-w-7xl">
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-2xl md:text-3xl font-serif italic text-amber-100 text-center flex-grow title">
+            Le jargon des mycologues
+          </h1>
+          {displayHome && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-amber-100 hover:text-white hover:bg-[#004000] shrink-0"
+              onClick={goToHome}
+              aria-label="Aller à l'accueil"
+            >
+              <Home className="h-6 w-6" />
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+    </header>
   );
 };
 

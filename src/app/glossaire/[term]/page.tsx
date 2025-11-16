@@ -87,6 +87,14 @@ const Page = async ({ params }: Props) => {
   const exampleUrl = data.example && getImageUrl(data.example, 350);
   const schemaUrl = data.schema && getImageUrl(data.schema, 350);
 
+  const exampleImageDimensions = data.example?.asset._ref.split("-")[2].split("x");
+  const exampleImageWidth = exampleImageDimensions && parseInt(exampleImageDimensions[0]);
+  const exampleUrlFull = data.example && getImageUrl(data.example, exampleImageWidth);
+
+  const schemaImageDimensions = data.schema?.asset._ref.split("-")[2].split("x");
+  const schemaImageWidth = schemaImageDimensions && parseInt(schemaImageDimensions[0]);
+  const schemaUrlFull = data.schema && getImageUrl(data.schema, schemaImageWidth);
+
   return (
     <div className="flex flex-grow">
       <div className="flex flex-grow">
@@ -95,8 +103,10 @@ const Page = async ({ params }: Props) => {
           definition={data.definition}
           synonyms={data.synonymsRichText}
           exampleImageUrl={exampleUrl}
+          exampleImageUrlFull={exampleUrlFull}
           exampleDescription={data.exampleDescription}
           schemaImageUrl={schemaUrl}
+          schemaImageUrlFull={schemaUrlFull}
           categories={data.categories?.filter((c) => c !== "Synonyme") || []}
         />
       </div>
