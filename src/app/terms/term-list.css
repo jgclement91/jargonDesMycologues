@@ -1,9 +1,5 @@
 .term-list {
-    height: calc(100vh - 17.5rem);
-    overflow-y: auto;
 }
 
 .mobile-term-list {
-    height: calc(100vh - 20.5rem);
-    overflow-y: auto;
 }

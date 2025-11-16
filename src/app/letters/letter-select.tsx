@@ -6,19 +6,18 @@ type Props = {
 };
 
 const LetterSelect = ({ onChange, hideButton }: Props) => {
-  const buttonText = "A -> Z";
+  if (hideButton) {
+    return null;
+  }
 
   return (
-    <div className="flex h-12 bg-green-600 items-center">
-      {!hideButton && (
-        <div
-          className="text-white font-bold pl-6 items-center cursor-pointer"
-          onClick={() => onChange()}
-        >
-          {buttonText}
-        </div>
-      )}
-    </div>
+    <button
+      className="w-full text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-3 text-left underline"
+      onClick={() => onChange()}
+      aria-label="Retour à la liste alphabétique"
+    >
+      ← Retour à A-Z
+    </button>
   );
 };
 

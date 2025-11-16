@@ -160,14 +160,16 @@ const TermCategories = ({ categories }: Props) => {
 
         return (
           <Tooltip key={categoryName} content={category.description} tooltipClassName="tooltip" maxWidth={250}>
-            <Image
-              className="min-w-[55px]"
-              key={category.text}
-              alt={category.text}
-              src={category.icon}
-              width={category.dimensions.width}
-              height={category.dimensions.height}
-            />
+            <div tabIndex={0} className="inline-block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded">
+              <Image
+                className="min-w-[55px]"
+                key={category.text}
+                alt={category.text}
+                src={category.icon}
+                width={category.dimensions.width}
+                height={category.dimensions.height}
+              />
+            </div>
           </Tooltip>
         );
       })}

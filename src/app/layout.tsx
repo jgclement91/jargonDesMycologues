@@ -30,6 +30,13 @@ const schemaData = {
 export const metadata: Metadata = {
   title: "Page d'accueil",
   description: `Un glossaire illustré des champignons conçu par Jean Després`,
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png' }
+    ],
+    apple: '/icon.png',
+  },
   openGraph: {
     title: "Page d'accueil",
     description: `Un glossaire illustré des champignons conçu par Jean Després`,
@@ -81,15 +88,13 @@ export default async function RootLayout({
           href="https://fonts.cdnfonts.com/css/tex-gyre-chorus"
           rel="stylesheet"
         ></link>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" type="image/png" href="/icon.png" />
-        <link rel="apple-touch-icon" href="/icon.png" />
-        {/* Next.js will inject metadata.other as custom tags */}
       </head>
-      <body className={`${inter.className} overflow-y-hidden`}>
-        <div className="app divide-x > * + *">
-          <Sidebar terms={sidebarTerms} />
-          {children}
+      <body className={`${inter.className}`}>
+        <div className="flex flex-col h-screen">
+          <div className="flex flex-1 overflow-hidden">
+            <Sidebar terms={sidebarTerms} />
+            {children}
+          </div>
         </div>
         <Analytics />
       </body>

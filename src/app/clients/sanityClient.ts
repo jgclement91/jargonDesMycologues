@@ -114,6 +114,32 @@ export async function fetchTermList(): Promise<TermListResponse[]> {
   }));
 }
 
+type FeaturedTerm = {
+  term: string;
+  definition: any;
+  categories: string[];
+  example?: {
+    _type: string;
+    _key: string;
+    asset: {
+      _ref: string;
+    };
+  };
+  schema?: {
+    _type: string;
+    _key: string;
+    asset: {
+      _ref: string;
+    };
+  };
+};
+
+export async function getFeaturedTerms(): Promise<FeaturedTerm[]> {
+  const query = '*[_type == "glossary" && (defined(example) || defined(schema))] | order(_createdAt desc) [0...6] {term, definition, categories, example, schema}';
+  const terms = await _sanityClient.fetch(query);
+  return terms;
+}
+
 export function getImageUrl(image: SanityImageSource, width: number): string {
   const sanityImageBuilder = imageUrlBuilder(_sanityClient);
 
