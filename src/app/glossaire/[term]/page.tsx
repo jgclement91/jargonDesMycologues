@@ -32,22 +32,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const term = data.term;
-  const exampleImageDimensions = data.example?.asset._ref.split("-")[2].split("x");
-  const exampleImageWidth = exampleImageDimensions && exampleImageDimensions[0];
-  const exampleImageHeight =
-    exampleImageDimensions && exampleImageDimensions[1].split(".")[0];
-  const exampleOg = data.example && {
+  const exampleImageDimensions = data.example?.asset._ref?.split("-")?.[2]?.split("x");
+  const exampleImageWidth = exampleImageDimensions?.[0];
+  const exampleImageHeight = exampleImageDimensions?.[1]?.split(".")?.[0];
+  const exampleOg = data.example && exampleImageWidth && {
     url: getImageUrl(data.example, parseInt(exampleImageWidth)),
     width: exampleImageWidth,
     height: exampleImageHeight,
     alt: `Illustration de l'exemple pour le terme ${term}`,
   };
 
-  const schemaImageDimensions = data.schema?.asset._ref.split("-")[2].split("x");
-  const schemaImageWidth = schemaImageDimensions && schemaImageDimensions[0];
-  const schemaImageHeight =
-    schemaImageDimensions && schemaImageDimensions[1].split(".")[0];
-  const schemaOg = data.schema && {
+  const schemaImageDimensions = data.schema?.asset._ref?.split("-")?.[2]?.split("x");
+  const schemaImageWidth = schemaImageDimensions?.[0];
+  const schemaImageHeight = schemaImageDimensions?.[1]?.split(".")?.[0];
+  const schemaOg = data.schema && schemaImageWidth && {
     url: getImageUrl(data.schema, parseInt(schemaImageWidth)),
     width: schemaImageWidth,
     height: schemaImageHeight,
@@ -87,13 +85,13 @@ const Page = async ({ params }: Props) => {
   const exampleUrl = data.example && getImageUrl(data.example, 350);
   const schemaUrl = data.schema && getImageUrl(data.schema, 350);
 
-  const exampleImageDimensions = data.example?.asset._ref.split("-")[2].split("x");
-  const exampleImageWidth = exampleImageDimensions && parseInt(exampleImageDimensions[0]);
-  const exampleUrlFull = data.example && getImageUrl(data.example, exampleImageWidth);
+  const exampleImageDimensions = data.example?.asset._ref?.split("-")?.[2]?.split("x");
+  const exampleImageWidth = exampleImageDimensions?.[0] ? parseInt(exampleImageDimensions[0]) : undefined;
+  const exampleUrlFull = data.example && exampleImageWidth && getImageUrl(data.example, exampleImageWidth);
 
-  const schemaImageDimensions = data.schema?.asset._ref.split("-")[2].split("x");
-  const schemaImageWidth = schemaImageDimensions && parseInt(schemaImageDimensions[0]);
-  const schemaUrlFull = data.schema && getImageUrl(data.schema, schemaImageWidth);
+  const schemaImageDimensions = data.schema?.asset._ref?.split("-")?.[2]?.split("x");
+  const schemaImageWidth = schemaImageDimensions?.[0] ? parseInt(schemaImageDimensions[0]) : undefined;
+  const schemaUrlFull = data.schema && schemaImageWidth && getImageUrl(data.schema, schemaImageWidth);
 
   return (
     <div className="flex flex-grow">
