@@ -43,10 +43,10 @@ const Home = () => {
 
           <section className="text-center mb-12 py-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-emerald-900 mb-4">
-              Glossaire Mycologique Illustré
+              Le jargon des mycologues
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-3xl mx-auto">
-              Un glossaire vulgarisé avec hyperliens, exemples et planches anatomiques détaillées
+              Un glossaire illustré et vulgarisé avec hyperliens, exemples et planches anatomiques détaillées
             </p>
 
             <div className="flex flex-wrap justify-center gap-8 text-center">
