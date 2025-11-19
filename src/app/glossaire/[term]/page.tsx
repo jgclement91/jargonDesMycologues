@@ -9,9 +9,9 @@ import { Metadata } from "next";
 import Content from "../../components/content";
 
 type Props = {
-  params: {
+  params: Promise<{
     term: string;
-  };
+  }>;
 };
 
 export async function generateStaticParams() {
@@ -19,9 +19,10 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const data = await fetchTerm(decodeURIComponent(params.term));
+  const { term: termSlug } = await params;
+  const data = await fetchTerm(decodeURIComponent(termSlug));
 
-  if (!data && params.term.length == 1) {
+  if (!data && termSlug.length == 1) {
     return {
       title: `Un glossaire illustré des champignons conçu par Jean Després`,
       description: `Un glossaire illustré des champignons conçu par Jean Després`,
@@ -70,7 +71,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const Page = async ({ params }: Props) => {
-  if (params.term.length == 1) {
+  const { term: termSlug } = await params;
+  if (termSlug.length == 1) {
     return (
       <div className="app">
         <div className="content"></div>
@@ -78,7 +80,7 @@ const Page = async ({ params }: Props) => {
     );
   }
 
-  const data = await fetchTerm(decodeURIComponent(params.term));
+  const data = await fetchTerm(decodeURIComponent(termSlug));
   if (!data) {
     notFound();
   }

@@ -10,9 +10,9 @@ import Image from "next/image";
 import "./page.css";
 
 type Props = {
-  params: {
+  params: Promise<{
     title: string;
-  };
+  }>;
 };
 
 export async function generateStaticParams() {
@@ -20,7 +20,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const data = await fetchPlanche(decodeURIComponent(params.title));
+  const { title: titleSlug } = await params;
+  const data = await fetchPlanche(decodeURIComponent(titleSlug));
   const imageRef = data.image.asset._ref;
   const imageDimensions = imageRef.split("-")[2].split("x");
   const imageWidth = imageDimensions[0];
@@ -38,11 +39,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: title,
     description: title,
     alternates: {
-      canonical: `https://www.jargon-des-mycologues.org/planche/${params.title}`,
+      canonical: `https://www.jargon-des-mycologues.org/planche/${titleSlug}`,
     },
     openGraph: {
       title: title,
-      url: `https://www.jargon-des-mycologues.org/planche/${params.title}`,
+      url: `https://www.jargon-des-mycologues.org/planche/${titleSlug}`,
       images: {
         url: imageUrl,
         width: imageWidth,
@@ -56,7 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const Page = async ({ params }: Props) => {
-  const data = await fetchPlanche(decodeURIComponent(params.title));
+  const { title: titleSlug } = await params;
+  const data = await fetchPlanche(decodeURIComponent(titleSlug));
   const imageRef = data.image.asset._ref;
   const imageDimensions = imageRef.split("-")[2].split("x");
   const imageWidth = imageDimensions[0];

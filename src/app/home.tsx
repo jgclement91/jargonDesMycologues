@@ -22,9 +22,9 @@ const Home = () => {
       header={<Header />}
       footer={<Footer />}
     >
-        <main className="relative">
+        <main className="relative" style={{ backgroundColor: '#F7F2ED', minHeight: '100%' }}>
         {/* Subtle background images */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-5">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20">
           <Image
             src={BackgroundLeft}
             alt=""
