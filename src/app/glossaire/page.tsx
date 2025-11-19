@@ -1,8 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Search, BookOpen, Eye } from "lucide-react";
-import Header from "../components/header";
-import Footer from "../components/footer";
+import GlossaireWrapper from "../components/glossaire-wrapper";
 import { fetchTerm, getImageUrl } from "../clients/sanityClient";
 
 const POPULAR_TERMS = ["Ascome", "Collarié", "Pleurote", "Bolet", "Lactaire", "Alvéolé"];
@@ -35,12 +34,7 @@ const Page = async () => {
   const validTerms = popularTermsData.filter(Boolean);
 
   return (
-    <div className="flex flex-grow">
-      <div className="flex flex-grow flex-col">
-        <div className="content h-full">
-          <div className="overflow-y-auto h-full">
-            <Header />
-
+    <GlossaireWrapper>
             <div className="max-w-5xl mx-auto px-6 py-8">
               <div className="mb-12">
                 <h1 className="text-4xl font-bold text-slate-800 mb-4">
@@ -136,12 +130,7 @@ const Page = async () => {
                 </p>
               </div>
             </div>
-
-            <Footer />
-          </div>
-        </div>
-      </div>
-    </div>
+    </GlossaireWrapper>
   );
 };
 

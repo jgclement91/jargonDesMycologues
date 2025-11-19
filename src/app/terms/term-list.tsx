@@ -11,13 +11,14 @@ type Props = {
   selectedTerm?: string;
   onTermSelect: (term: string) => void;
   scrollToTerm: boolean;
+  searchQuery?: string;
 };
 
 function distinct(value: string, index: number, array: Array<string>) {
   return array.indexOf(value) === index;
 }
 
-const TermList = ({ terms, selectedTerm, onTermSelect, scrollToTerm }: Props) => {
+const TermList = ({ terms, selectedTerm, onTermSelect, scrollToTerm, searchQuery }: Props) => {
   const mobile = useMediaQuery("(max-width:640px)");
   const path = decodeURIComponent(usePathname());
 
@@ -32,6 +33,7 @@ const TermList = ({ terms, selectedTerm, onTermSelect, scrollToTerm }: Props) =>
             onTermSelect={() => onTermSelect(term)}
             scrollToTerm={scrollToTerm}
             isFirstTerm={index === 0}
+            searchQuery={searchQuery}
           />
         ))}
       </div>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Footer from "./components/footer";
 import Header from "./components/header";
+import LandscapeContainer from "./components/landscape-container";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Image as ImageIcon } from "lucide-react";
 
@@ -17,9 +18,10 @@ const Home = () => {
   const router = useRouter();
 
   return (
-    <div className="content h-full">
-      <div className="overflow-y-auto h-full bg-gradient-to-b from-slate-50 to-white">
-        <Header />
+    <LandscapeContainer
+      header={<Header />}
+      footer={<Footer />}
+    >
         <main className="relative">
         {/* Subtle background images */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-5">
@@ -201,9 +203,7 @@ const Home = () => {
 
         </div>
         </main>
-      </div>
-      <Footer />
-    </div>
+    </LandscapeContainer>
   );
 };
 

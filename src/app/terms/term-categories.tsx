@@ -1,7 +1,14 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image, { StaticImageData } from "next/image";
-import Tooltip from "@igloo-ui/tooltip";
+import { useMediaQuery } from "usehooks-ts";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import ClassificationIcon from "../images/categoryIcons/Classification.gif";
 import CycleDeVieIcon from "../images/categoryIcons/Cycle-de-vie.gif";
 import EcologieIcon from "../images/categoryIcons/Écologie.gif";
@@ -144,36 +151,77 @@ type Props = {
 };
 
 const TermCategories = ({ categories }: Props) => {
+  const isMobile = useMediaQuery("(max-width: 1024px)");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!categories){
     return <></>;
   }
 
-  return (
-    <div className="flex pl-4 gap-8 self-center">
-      {categories.map((categoryName: string) => {
-        const category = categoryDictionary.get(categoryName.toLowerCase());
+  if (!mounted || isMobile) {
+    return (
+      <div className="flex pl-4 gap-8 self-center">
+        {categories.map((categoryName: string) => {
+          const category = categoryDictionary.get(categoryName.toLowerCase());
 
-        if (!category) {
-          return <></>;
-        }
+          if (!category) {
+            return <></>;
+          }
 
-        return (
-          <Tooltip key={categoryName} content={category.description} tooltipClassName="tooltip" maxWidth={250}>
-            <div tabIndex={0} className="inline-block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded">
+          return (
+            <div key={categoryName} tabIndex={0} className="inline-block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded">
               <Image
                 className="min-w-[55px]"
-                key={category.text}
                 alt={category.text}
                 src={category.icon}
                 width={category.dimensions.width}
                 height={category.dimensions.height}
               />
             </div>
-          </Tooltip>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <TooltipProvider delayDuration={200}>
+      <div className="flex pl-4 gap-8 self-center">
+        {categories.map((categoryName: string) => {
+          const category = categoryDictionary.get(categoryName.toLowerCase());
+
+          if (!category) {
+            return <></>;
+          }
+
+          return (
+            <Tooltip key={categoryName}>
+              <TooltipTrigger asChild>
+                <div
+                  tabIndex={0}
+                  className="inline-block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded content-center"
+                >
+                  <Image
+                    className="min-w-[55px]"
+                    alt={category.text}
+                    src={category.icon}
+                    width={category.dimensions.width}
+                    height={category.dimensions.height}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[250px]">
+                <p>{category.description}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </TooltipProvider>
   );
 };
 

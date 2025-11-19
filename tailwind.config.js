@@ -14,6 +14,9 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+    screens: {
+      'landscape': {'raw': '(max-height: 700px) and (orientation: landscape)'},
+    },
     extend: {
       fontFamily: {
         serif: ["Georgia", "Cambria", "Times New Roman", "Times", "serif"],

@@ -64,6 +64,17 @@ body {
   margin: 0;
 }
 
+@media (max-height: 700px) and (orientation: landscape) {
+  body {
+    font-size: 14px;
+  }
+
+  footer {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
 a {
   color: hsl(var(--primary));
   text-decoration: underline;
