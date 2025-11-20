@@ -8,7 +8,7 @@ type ThumbSize = {
 };
 
 const sizeClassMap: Record<string, string> = {
-  mobile: "w-[340px] min-w-[340px]",
+  mobile: "w-full max-w-[340px]",
   small: "w-[400px] min-w-[400px]",
   medium: "w-[550px] min-w-[550px]",
   large: "w-[700px] min-w-[700px]",

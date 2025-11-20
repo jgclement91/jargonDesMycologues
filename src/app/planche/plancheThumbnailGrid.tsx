@@ -62,7 +62,7 @@ const PlancheThumbnailGrid = ({ planches }: Props) => {
         return (
           <div key={pluralizedCategory} className="text-center my-8">
             <h2 className="text-2xl font-bold	">{pluralizedCategory}</h2>
-            <div className={`flex flex-wrap gap-4 justify-center items-center mt-4 mb-12`}>
+            <div className={`flex flex-wrap gap-4 justify-center items-center mt-4 mb-12 px-4 sm:px-0`}>
               {plancheByCategory(category).map((planche) => {
                 const size = sizeOptions[sizeIdx];
                 const key = (size?.key || "small") as keyof typeof planche.images;

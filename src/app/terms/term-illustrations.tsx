@@ -28,7 +28,7 @@ const TermIllustrations = ({
     description?: any;
   } | null>(null);
 
-  const isLandscape = useMediaQuery("(orientation: landscape)");
+  const isLandscape = useMediaQuery("(max-height: 700px) and (orientation: landscape)");
 
   const openModal = (
     src: string,
@@ -39,7 +39,7 @@ const TermIllustrations = ({
     if (isLandscape) {
       return;
     }
-    
+
     setModalImage({ src, alt, title, description });
   };
 
