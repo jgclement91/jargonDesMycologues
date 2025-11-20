@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image, { StaticImageData } from "next/image";
 import { useMediaQuery } from "usehooks-ts";
+import { useState } from "react";
+import Image, { StaticImageData } from "next/image";
 import {
   Tooltip,
   TooltipContent,
@@ -26,7 +26,7 @@ import ToxinesEtSyndromesIcon from "../images/categoryIcons/Toxines-et-syndromes
 import ToucherIcon from "../images/categoryIcons/Toucher.gif";
 import PharmacieIcon from "../images/categoryIcons/Pharmacie.gif";
 
-import "./term-categories.css"
+import "./term-categories.css";
 
 type IconImageDimensions = {
   width: number;
@@ -143,51 +143,15 @@ categoryDictionary.set("pharmacologie", {
   icon: PharmacieIcon,
   text: "Pharmacologie",
   dimensions: { width: 55, height: 55 },
-  description: "Terme relatif à la pharmacologie des champignons dits médicinaux",
+  description:
+    "Terme relatif à la pharmacologie des champignons dits médicinaux",
 });
 
 type Props = {
   categories: string[];
 };
 
-const TermCategories = ({ categories }: Props) => {
-  const isMobile = useMediaQuery("(max-width: 1024px)");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!categories){
-    return <></>;
-  }
-
-  if (!mounted || isMobile) {
-    return (
-      <div className="flex pl-4 gap-8 self-center">
-        {categories.map((categoryName: string) => {
-          const category = categoryDictionary.get(categoryName.toLowerCase());
-
-          if (!category) {
-            return <></>;
-          }
-
-          return (
-            <div key={categoryName} tabIndex={0} className="inline-block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded">
-              <Image
-                className="min-w-[55px]"
-                alt={category.text}
-                src={category.icon}
-                width={category.dimensions.width}
-                height={category.dimensions.height}
-              />
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
+const TermCategoriesDesktop = ({ categories }: Props) => {
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex pl-4 gap-8 self-center">
@@ -222,6 +186,76 @@ const TermCategories = ({ categories }: Props) => {
         })}
       </div>
     </TooltipProvider>
+  );
+};
+
+const TermCategoriesMobile = ({ categories }: Props) => {
+  const [openTooltip, setOpenTooltip] = useState<string | null>(null);
+
+  const handleTooltipToggle = (categoryName: string) => {
+    setOpenTooltip((prev) => (prev === categoryName ? null : categoryName));
+  };
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <div className="flex pl-4 gap-8 self-center">
+        {categories.map((categoryName: string) => {
+          const category = categoryDictionary.get(categoryName.toLowerCase());
+
+          if (!category) {
+            return <></>;
+          }
+
+          const isOpen = openTooltip === categoryName;
+
+          return (
+            <Tooltip
+              key={categoryName}
+              open={isOpen}
+              onOpenChange={(open) => {
+                if (!open && isOpen) {
+                  setOpenTooltip(null);
+                }
+              }}
+            >
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => handleTooltipToggle(categoryName)}
+                  className="inline-block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded content-center bg-transparent border-0 p-0 cursor-pointer"
+                  aria-label={category.text}
+                >
+                  <Image
+                    className="min-w-[55px]"
+                    alt={category.text}
+                    src={category.icon}
+                    width={category.dimensions.width}
+                    height={category.dimensions.height}
+                  />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[250px]">
+                <p>{category.description}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </TooltipProvider>
+  );
+};
+
+const TermCategories = ({ categories }: Props) => {
+  if (!categories) {
+    return <></>;
+  }
+
+  const isMobile = useMediaQuery("(max-width: 1024px)");
+
+  return isMobile ? (
+    <TermCategoriesMobile categories={categories} />
+  ) : (
+    <TermCategoriesDesktop categories={categories} />
   );
 };
 

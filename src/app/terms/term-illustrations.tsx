@@ -2,18 +2,25 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useMediaQuery } from "usehooks-ts";
 import PortableTextComponent from "../components/portableTextComponent";
 import ImageModal from "@/components/ui/image-modal";
 
 type Props = {
-    exampleImageUrl: any;
-    exampleImageUrlFull: any;
-    exampleDescription: any;
-    schemaImageUrl: any;
-    schemaImageUrlFull: any;
-  };
+  exampleImageUrl: any;
+  exampleImageUrlFull: any;
+  exampleDescription: any;
+  schemaImageUrl: any;
+  schemaImageUrlFull: any;
+};
 
-const TermIllustrations = ({exampleImageUrl, exampleImageUrlFull, exampleDescription, schemaImageUrl, schemaImageUrlFull}: Props) => {
+const TermIllustrations = ({
+  exampleImageUrl,
+  exampleImageUrlFull,
+  exampleDescription,
+  schemaImageUrl,
+  schemaImageUrlFull,
+}: Props) => {
   const [modalImage, setModalImage] = useState<{
     src: string;
     alt: string;
@@ -21,7 +28,18 @@ const TermIllustrations = ({exampleImageUrl, exampleImageUrlFull, exampleDescrip
     description?: any;
   } | null>(null);
 
-  const openModal = (src: string, alt: string, title: string, description?: any) => {
+  const isLandscape = useMediaQuery("(orientation: landscape)");
+
+  const openModal = (
+    src: string,
+    alt: string,
+    title: string,
+    description?: any
+  ) => {
+    if (isLandscape) {
+      return;
+    }
+    
     setModalImage({ src, alt, title, description });
   };
 
@@ -43,8 +61,12 @@ const TermIllustrations = ({exampleImageUrl, exampleImageUrlFull, exampleDescrip
             </div>
             <div className="p-1 flex justify-center">
               <div
-                className="h-[300px] w-[250px] relative cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => openModal(schemaImageUrlFull, "Schéma", "Schéma")}
+                className={`h-[300px] w-[250px] relative transition-opacity ${
+                  isLandscape ? "" : "cursor-pointer hover:opacity-90"
+                }`}
+                onClick={() =>
+                  openModal(schemaImageUrlFull, "Schéma", "Schéma")
+                }
               >
                 <Image
                   src={schemaImageUrl}
@@ -64,8 +86,17 @@ const TermIllustrations = ({exampleImageUrl, exampleImageUrlFull, exampleDescrip
             </div>
             <div className="p-1 flex justify-center">
               <div
-                className="h-[300px] w-[250px] relative cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => openModal(exampleImageUrlFull, "Exemple", "Exemple", exampleDescription)}
+                className={`h-[300px] w-[250px] relative transition-opacity ${
+                  isLandscape ? "" : "cursor-pointer hover:opacity-90"
+                }`}
+                onClick={() =>
+                  openModal(
+                    exampleImageUrlFull,
+                    "Exemple",
+                    "Exemple",
+                    exampleDescription
+                  )
+                }
               >
                 <Image
                   src={exampleImageUrl}
@@ -96,6 +127,6 @@ const TermIllustrations = ({exampleImageUrl, exampleImageUrlFull, exampleDescrip
       )}
     </>
   );
-}
+};
 
-export default TermIllustrations
+export default TermIllustrations;
