@@ -1,4 +1,32 @@
 .title {
     font-family: 'TeX Gyre Chorus', sans-serif;
     color: #cccc9a;
+    padding-bottom: 10px;
+}
+
+@media (max-height: 700px) and (orientation: landscape) {
+    .header-container {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .header-inner {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .header-title {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+    }
+
+    .header-button {
+        height: 2rem;
+        width: 2rem;
+    }
+
+    .header-icon {
+        height: 1rem;
+        width: 1rem;
+    }
 }
