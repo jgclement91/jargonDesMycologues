@@ -8,7 +8,7 @@ type ThumbSize = {
 };
 
 const sizeClassMap: Record<string, string> = {
-  mobile: "w-[340px] min-w-[340px]",
+  mobile: "w-full max-w-[340px]",
   small: "w-[400px] min-w-[400px]",
   medium: "w-[550px] min-w-[550px]",
   large: "w-[700px] min-w-[700px]",
@@ -32,7 +32,7 @@ const PlancheThumbnail = (
         rel="noopener noreferrer"
         tabIndex={0}
         aria-label={`Ouvrir la planche ${label} dans un nouvel onglet`}
-        className={`${sizeClass} sm:ml-4 border-2 border-black box-border p-1 mt-1 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:z-10 block`}
+        className={`${sizeClass} sm:ml-4 border-2 border-black box-border p-1 mt-1 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:z-10 block`}
       >
         <Image
           alt="Schema"
