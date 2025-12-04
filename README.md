@@ -41,8 +41,8 @@ To address the difficulty of technical terms, we've implemented hyperlinks direc
 
 ## 🛠️ Tech Stack
 
-- **Framework:** [Next.js](https://nextjs.org/) 13.5 (App Router)
-- **Language:** TypeScript 5.0
+- **Framework:** [Next.js](https://nextjs.org/) 16.0 (App Router)
+- **Language:** TypeScript 5.1
 - **CMS:** [Sanity](https://www.sanity.io/) (Headless CMS)
 - **Styling:** TailwindCSS 3.3
 - **UI Components:** Radix UI
