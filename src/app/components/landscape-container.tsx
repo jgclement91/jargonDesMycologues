@@ -47,7 +47,6 @@ const LandscapeContainer = ({ header, footer, children }: Props) => {
     const scrollElement = scrollRef.current;
     if (scrollElement) {
       scrollElement.addEventListener('scroll', handleScroll);
-      // Use setTimeout to ensure DOM is ready
       setTimeout(handleScroll, 100);
     }
 
@@ -58,23 +57,11 @@ const LandscapeContainer = ({ header, footer, children }: Props) => {
     };
   }, [landscape, mounted]);
 
-  if (!mounted) {
+  if (!mounted || !landscape) {
     return (
-      <div className="content h-full">
-        <div className="overflow-y-auto h-full bg-gradient-to-b from-slate-50 to-white">
-          {header}
-          {children}
-        </div>
-        {footer}
-      </div>
-    );
-  }
-
-  if (!landscape) {
-    return (
-      <div className="content h-full">
-        <div className="overflow-y-auto h-full bg-gradient-to-b from-slate-50 to-white">
-          {header}
+      <div className="content h-full flex flex-col">
+        {header}
+        <div className="flex-1 overflow-y-auto bg-gradient-to-b from-slate-50 to-white" style={{ minHeight: 0 }}>
           {children}
         </div>
         {footer}
