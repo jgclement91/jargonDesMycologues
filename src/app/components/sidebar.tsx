@@ -35,7 +35,7 @@ const Sidebar = ({ terms }: Props) => {
   const pathSegments = path.split("/");
 
   const mobile = useMediaQuery("(max-width:640px)");
-  const landscape = useMediaQuery("(max-height: 700px) and (orientation: landscape)");
+  const landscape = useMediaQuery("(max-width: 699px) and (max-height: 700px) and (orientation: landscape)");
   const [mounted, setMounted] = useState(false);
 
   const [selectedLetter, setSelectedLetter] = useState("");
