@@ -42,7 +42,7 @@ const PlancheThumbnailGrid = ({ planches }: Props) => {
   };
 
   return (
-    <div className="flex flex-col sm:block">
+    <div className="overflow-y-auto flex flex-col sm:block">
       {
         !isMobile && (
           <div className="w-full flex flex-col items-center mt-6 mb-2">

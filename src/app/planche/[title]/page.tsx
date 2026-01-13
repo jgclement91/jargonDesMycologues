@@ -73,7 +73,7 @@ const Page = async ({ params }: Props) => {
     : label;
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="w-auto h-auto">
       <Image
         alt={title}
         src={imageUrl}
