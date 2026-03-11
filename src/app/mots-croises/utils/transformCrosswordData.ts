@@ -1,6 +1,6 @@
 import type { CrosswordData } from '@/app/clients/sanityClient';
 
-type LibraryClue = {
+export type LibraryClue = {
   clue: string;
   answer: string;
   row: number;

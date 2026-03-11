@@ -1,57 +1,90 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
-import type { CrosswordProviderImperative } from '@jaredreisinger/react-crossword';
+import CrosswordGrid, { type CrosswordGridImperative } from './CrosswordGrid';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, CheckCircle2, Eye } from 'lucide-react';
-import type { LibraryFormat } from '../utils/transformCrosswordData';
+import type { LibraryFormat, LibraryClue } from '../utils/transformCrosswordData';
 
-const Crossword = dynamic(
-  () => import('@jaredreisinger/react-crossword').then(m => m.default),
-  { ssr: false, loading: () => <div className="h-64 flex items-center justify-center text-slate-400 text-sm">Chargement de la grille…</div> }
-);
+type ClueGroupProps = {
+  title: string;
+  entries: Record<string, LibraryClue>;
+  groupKey: 'row' | 'col';
+  labelPrefix: string;
+  direction: 'across' | 'down';
+  onClueClick: (row: number, col: number, dir: 'across' | 'down') => void;
+};
+
+function ClueGroup({ title, entries, groupKey, labelPrefix, direction, onClueClick }: ClueGroupProps) {
+  const otherKey = groupKey === 'row' ? 'col' : 'row';
+  const groups = new Map<number, Array<{ num: string; clue: string; position: number; row: number; col: number }>>();
+  for (const [num, entry] of Object.entries(entries)) {
+    const coord = entry[groupKey] + 1;
+    if (!groups.has(coord)) groups.set(coord, []);
+    groups.get(coord)!.push({ num, clue: entry.clue, position: entry[otherKey] + 1, row: entry.row, col: entry.col });
+  }
+  const sorted = [...groups.entries()].sort((a, b) => a[0] - b[0]);
+
+  return (
+    <div>
+      <h3 className="font-semibold text-slate-700 mb-3">{title}</h3>
+      <div className="space-y-3">
+        {sorted.map(([coord, clues]) => (
+          <div key={coord}>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              {labelPrefix} {coord}
+            </span>
+            <ul className="mt-0.5 space-y-0.5">
+              {clues.sort((a, b) => a.position - b.position).map(({ num, clue, position, row, col }) => (
+                <li
+                  key={num}
+                  className="text-sm text-slate-600 flex items-baseline gap-2 pl-2 cursor-pointer hover:text-emerald-700 hover:bg-emerald-50 rounded px-1 -mx-1 transition-colors"
+                  onClick={() => onClueClick(row, col, direction)}
+                >
+                  <span className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded bg-slate-100 text-slate-500 text-xs font-semibold">
+                    {position}
+                  </span>
+                  {clue}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 type Props = {
   data: LibraryFormat;
   crosswordId: string;
   solutionAvailable: boolean;
+  rows: number;
+  cols: number;
 };
 
-export default function CrosswordPlayer({ data, crosswordId, solutionAvailable }: Props) {
-  const crosswordRef = useRef<CrosswordProviderImperative>(null);
+export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, rows, cols }: Props) {
+  const gridRef = useRef<CrosswordGridImperative>(null);
   const [isComplete, setIsComplete] = useState(false);
-  const skipStorageRef = useRef(false);
   const storageKey = `crossword-${crosswordId}`;
 
   const totalClues = Object.keys(data.across).length + Object.keys(data.down).length;
 
-  const handleCrosswordComplete = useCallback((correct: boolean) => {
+  const handleComplete = useCallback((correct: boolean) => {
     if (correct) setIsComplete(true);
   }, []);
 
-  const handleCellChange = useCallback((row: number, col: number, char: string) => {
-    if (skipStorageRef.current) return;
-    try {
-      const current = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      current[`${row}-${col}`] = char;
-      localStorage.setItem(storageKey, JSON.stringify(current));
-    } catch {
-      // ignore storage errors
-    }
-  }, [storageKey]);
-
   const handleReset = useCallback(() => {
-    crosswordRef.current?.reset();
+    gridRef.current?.reset();
     setIsComplete(false);
-    localStorage.removeItem(storageKey);
-  }, [storageKey]);
+  }, []);
 
   const handleShowSolution = useCallback(() => {
-    skipStorageRef.current = true;
-    crosswordRef.current?.fillAllAnswers();
-    // Allow a tick for all onCellChange events to fire before re-enabling storage writes
-    setTimeout(() => { skipStorageRef.current = false; }, 0);
+    gridRef.current?.fillAllAnswers();
+  }, []);
+
+  const handleClueClick = useCallback((row: number, col: number, dir: 'across' | 'down') => {
+    gridRef.current?.focusWord(row, col, dir);
   }, []);
 
   return (
@@ -82,21 +115,33 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable }
         </div>
       </div>
 
-      <Crossword
-        ref={crosswordRef}
+      <CrosswordGrid
+        ref={gridRef}
         data={data}
-        onCrosswordComplete={handleCrosswordComplete}
-        onCellChange={handleCellChange}
-        theme={{
-          gridBackground: '#fff',
-          cellBackground: '#fff',
-          cellBorder: '#cbd5e1',
-          textColor: '#1e293b',
-          numberColor: '#64748b',
-          focusBackground: '#d1fae5',
-          highlightBackground: '#f1f5f9',
-        }}
+        rows={rows}
+        cols={cols}
+        storageKey={storageKey}
+        onComplete={handleComplete}
       />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4 border-t border-slate-200">
+        <ClueGroup
+          title="Lignes"
+          entries={data.across}
+          groupKey="row"
+          labelPrefix="Ligne"
+          direction="across"
+          onClueClick={handleClueClick}
+        />
+        <ClueGroup
+          title="Colonnes"
+          entries={data.down}
+          groupKey="col"
+          labelPrefix="Colonne"
+          direction="down"
+          onClueClick={handleClueClick}
+        />
+      </div>
     </div>
   );
 }
