@@ -16,7 +16,7 @@ import Drawer from "react-modern-drawer";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useMediaQuery } from "usehooks-ts";
-import { Search, BookOpen, Menu, X } from "lucide-react";
+import { Search, BookOpen, Menu, X, Puzzle, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -27,9 +27,10 @@ import "./sidebar.css";
 
 type Props = {
   terms: string[];
+  isAdmin?: boolean;
 };
 
-const Sidebar = ({ terms }: Props) => {
+const Sidebar = ({ terms, isAdmin }: Props) => {
   const router = useRouter();
   const path = decodeURIComponent(usePathname());
   const pathSegments = path.split("/");
@@ -203,6 +204,16 @@ const Sidebar = ({ terms }: Props) => {
     e.stopPropagation();
   };
 
+  const goToMotsCroises = (e: SyntheticEvent) => {
+    router.push(`/mots-croises`);
+    e.stopPropagation();
+  };
+
+  const goToAdmin = (e: SyntheticEvent) => {
+    router.push(`/admin/mots-croises`);
+    e.stopPropagation();
+  };
+
   if (path.startsWith("/planche/")) {
     return <></>;
   }
@@ -246,11 +257,29 @@ const Sidebar = ({ terms }: Props) => {
         {!path.endsWith("/planche") && (
           <Button
             variant="link"
-            className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-3 px-0 justify-start"
+            className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-1 px-0 justify-start"
             onClick={goToPlanche}
           >
             <BookOpen className="h-4 w-4" />
             Accès aux planches
+          </Button>
+        )}
+        <Button
+          variant="link"
+          className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-3 px-0 justify-start"
+          onClick={goToMotsCroises}
+        >
+          <Puzzle className="h-4 w-4" />
+          Mots croisés
+        </Button>
+        {isAdmin && (
+          <Button
+            variant="link"
+            className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 font-medium text-sm mb-3 px-0 justify-start"
+            onClick={goToAdmin}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Administration
           </Button>
         )}
         <LetterSelect hideButton={!showLetterSelect} onChange={displayLetters} />
@@ -331,6 +360,20 @@ const Sidebar = ({ terms }: Props) => {
             <BookOpen
               className="pt-2.5 cursor-pointer h-9 w-9 text-slate-600"
               onClick={goToPlanche}
+            />
+          </div>
+        )}
+        <div className="flex w-full justify-center">
+          <Puzzle
+            className="pt-2.5 cursor-pointer h-9 w-9 text-slate-600"
+            onClick={goToMotsCroises}
+          />
+        </div>
+        {isAdmin && (
+          <div className="flex w-full justify-center">
+            <ShieldCheck
+              className="pt-2.5 cursor-pointer h-9 w-9 text-slate-500"
+              onClick={goToAdmin}
             />
           </div>
         )}
