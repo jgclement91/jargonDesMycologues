@@ -5,6 +5,7 @@ export type LibraryClue = {
   answer: string;
   row: number;
   col: number;
+  termSlug?: string;
 };
 
 export type LibraryFormat = {
@@ -22,6 +23,7 @@ export function transformForLibrary(data: CrosswordData): LibraryFormat {
       answer: entry.answer.toUpperCase(),
       row: entry.row,
       col: entry.col,
+      termSlug: entry.termSlug,
     };
   }
 
@@ -31,6 +33,7 @@ export function transformForLibrary(data: CrosswordData): LibraryFormat {
       answer: entry.answer.toUpperCase(),
       row: entry.row,
       col: entry.col,
+      termSlug: entry.termSlug,
     };
   }
 

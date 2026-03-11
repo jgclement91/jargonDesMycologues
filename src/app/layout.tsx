@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { Metadata } from "next";
 import Sidebar from "./components/sidebar";
 import { fetchTermList } from "@/app/clients/sanityClient";
+import { getIsAdmin } from "@/app/admin/utils/session";
 import { cache } from "react";
 import "./globals.css";
 import "./layout.css";
@@ -80,7 +81,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const sidebarTerms = await getSidebarTerms();
+  const [sidebarTerms, isAdmin] = await Promise.all([getSidebarTerms(), getIsAdmin()]);
   return (
     <html lang="fr">
       <head>
@@ -92,7 +93,7 @@ export default async function RootLayout({
       <body className={`${inter.className}`}>
         <div className="flex flex-col h-screen">
           <div className="flex flex-1 overflow-hidden">
-            <Sidebar terms={sidebarTerms} />
+            <Sidebar terms={sidebarTerms} isAdmin={isAdmin} />
             {children}
           </div>
         </div>

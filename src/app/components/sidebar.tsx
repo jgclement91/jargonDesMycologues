@@ -16,7 +16,7 @@ import Drawer from "react-modern-drawer";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useMediaQuery } from "usehooks-ts";
-import { Search, BookOpen, Menu, X, Puzzle } from "lucide-react";
+import { Search, BookOpen, Menu, X, Puzzle, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -27,9 +27,10 @@ import "./sidebar.css";
 
 type Props = {
   terms: string[];
+  isAdmin?: boolean;
 };
 
-const Sidebar = ({ terms }: Props) => {
+const Sidebar = ({ terms, isAdmin }: Props) => {
   const router = useRouter();
   const path = decodeURIComponent(usePathname());
   const pathSegments = path.split("/");
@@ -208,6 +209,11 @@ const Sidebar = ({ terms }: Props) => {
     e.stopPropagation();
   };
 
+  const goToAdmin = (e: SyntheticEvent) => {
+    router.push(`/admin/mots-croises`);
+    e.stopPropagation();
+  };
+
   if (path.startsWith("/planche/")) {
     return <></>;
   }
@@ -266,6 +272,16 @@ const Sidebar = ({ terms }: Props) => {
           <Puzzle className="h-4 w-4" />
           Mots croisés
         </Button>
+        {isAdmin && (
+          <Button
+            variant="link"
+            className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 font-medium text-sm mb-3 px-0 justify-start"
+            onClick={goToAdmin}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Administration
+          </Button>
+        )}
         <LetterSelect hideButton={!showLetterSelect} onChange={displayLetters} />
         <div className={`flex flex-col border border-slate-200 rounded-md overflow-hidden ${landscape ? '' : 'flex-1 min-h-0'}`}>
           <div className="bg-[#006000] text-white px-3 py-2 text-center font-medium">
@@ -353,6 +369,14 @@ const Sidebar = ({ terms }: Props) => {
             onClick={goToMotsCroises}
           />
         </div>
+        {isAdmin && (
+          <div className="flex w-full justify-center">
+            <ShieldCheck
+              className="pt-2.5 cursor-pointer h-9 w-9 text-slate-500"
+              onClick={goToAdmin}
+            />
+          </div>
+        )}
         <Drawer
           className="flex flex-col"
           open={isOpen}

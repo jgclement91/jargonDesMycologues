@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, Fragment, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import type { LibraryFormat } from '../utils/transformCrosswordData';
 
 export type CrosswordGridImperative = {
@@ -8,6 +8,13 @@ export type CrosswordGridImperative = {
   fillAllAnswers: () => void;
   focusWord: (row: number, col: number, dir: 'across' | 'down') => void;
 };
+
+export type FocusChangeState = {
+  row: number;
+  col: number;
+  dir: 'across' | 'down';
+  wordNum: number | null;
+} | null;
 
 type CellInfo = {
   isBlocked: boolean;
@@ -22,9 +29,11 @@ type Props = {
   cols: number;
   storageKey: string;
   onComplete?: (correct: boolean) => void;
+  onFocusChange?: (state: FocusChangeState) => void;
 };
 
-const CELL = 36;
+const MAX_CELL = 36;
+const ROW_LABEL_WIDTH = 24;
 
 function buildGrid(data: LibraryFormat, rows: number, cols: number): CellInfo[][] {
   const g: CellInfo[][] = Array.from({ length: rows }, () =>
@@ -77,7 +86,7 @@ function checkCorrect(grid: CellInfo[][], letters: Record<string, string>): bool
 }
 
 const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function CrosswordGrid(
-  { data, rows, cols, storageKey, onComplete },
+  { data, rows, cols, storageKey, onComplete, onFocusChange },
   ref
 ) {
   const grid = useMemo(() => buildGrid(data, rows, cols), [data, rows, cols]);
@@ -93,9 +102,53 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
 
   const [focused, setFocused] = useState<{ row: number; col: number } | null>(null);
   const [direction, setDirection] = useState<'across' | 'down'>('across');
+  const [containerWidth, setContainerWidth] = useState(0);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const onCompleteRef = useRef(onComplete);
+  const onFocusChangeRef = useRef(onFocusChange);
   useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
+  useEffect(() => { onFocusChangeRef.current = onFocusChange; }, [onFocusChange]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      setContainerWidth(entries[0].contentRect.width);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const cellSize = containerWidth > 0
+    ? Math.min(MAX_CELL, Math.floor((containerWidth - ROW_LABEL_WIDTH) / cols))
+    : MAX_CELL;
+
+  const startNumbers = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const [num, entry] of Object.entries(data.across)) {
+      const key = `${entry.row}-${entry.col}`;
+      const n = Number(num);
+      if (!map.has(key) || n < map.get(key)!) map.set(key, n);
+    }
+    for (const [num, entry] of Object.entries(data.down)) {
+      const key = `${entry.row}-${entry.col}`;
+      const n = Number(num);
+      if (!map.has(key) || n < map.get(key)!) map.set(key, n);
+    }
+    return map;
+  }, [data]);
+
+  useEffect(() => {
+    if (!focused) {
+      onFocusChangeRef.current?.(null);
+      return;
+    }
+    const wordNum = direction === 'across'
+      ? grid[focused.row][focused.col].acrossNum
+      : grid[focused.row][focused.col].downNum;
+    onFocusChangeRef.current?.({ row: focused.row, col: focused.col, dir: direction, wordNum: wordNum ?? null });
+  }, [focused, direction, grid]);
 
   const wordCells = useMemo((): Set<string> => {
     if (!focused) return new Set();
@@ -199,6 +252,9 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
     },
   }), [grid, rows, cols, storageKey]);
 
+  const numFontSize = Math.max(7, Math.min(9, cellSize / 4));
+  const letterFontSize = Math.max(11, Math.round(cellSize * 0.42));
+
   return (
     <div
       ref={containerRef}
@@ -209,11 +265,11 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
       <table style={{ borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={{ width: 24 }} />
+            <th style={{ width: ROW_LABEL_WIDTH }} />
             {Array.from({ length: cols }, (_, c) => (
               <th
                 key={c}
-                style={{ width: CELL, height: 20, fontWeight: 'normal', fontSize: 11 }}
+                style={{ width: cellSize, height: 20, fontWeight: 'normal', fontSize: 11 }}
                 className="text-slate-400 text-center select-none"
               >
                 {c + 1}
@@ -225,7 +281,7 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
           {Array.from({ length: rows }, (_, r) => (
             <tr key={r}>
               <td
-                style={{ width: 24, height: CELL, fontSize: 11 }}
+                style={{ width: ROW_LABEL_WIDTH, height: cellSize, fontSize: 11 }}
                 className="text-slate-400 text-right pr-1 select-none align-middle"
               >
                 {r + 1}
@@ -239,8 +295,8 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
                     <td
                       key={key}
                       style={{
-                        width: CELL,
-                        height: CELL,
+                        width: cellSize,
+                        height: cellSize,
                         backgroundColor: '#000',
                         border: '1px solid #000',
                       }}
@@ -251,26 +307,44 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
                 const isFocused = focused?.row === r && focused?.col === c;
                 const isInWord = wordCells.has(key);
                 const letter = letters[key] ?? '';
-                const bg = isFocused ? '#d1fae5' : isInWord ? '#f1f5f9' : '#fff';
+                const bg = isFocused ? '#d1fae5' : isInWord ? '#dbeafe' : '#fff';
+                const startNum = startNumbers.get(key);
 
                 return (
                   <td
                     key={key}
                     onClick={() => handleCellClick(r, c)}
                     style={{
-                      width: CELL,
-                      height: CELL,
+                      position: 'relative',
+                      width: cellSize,
+                      height: cellSize,
                       backgroundColor: bg,
                       border: '1px solid #cbd5e1',
                       cursor: 'pointer',
                       textAlign: 'center',
                       verticalAlign: 'middle',
-                      fontSize: 15,
+                      fontSize: letterFontSize,
                       fontWeight: 600,
                       color: '#1e293b',
                       userSelect: 'none',
                     }}
                   >
+                    {startNum !== undefined && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: 1,
+                          left: 1,
+                          fontSize: numFontSize,
+                          lineHeight: 1,
+                          color: '#64748b',
+                          fontWeight: 600,
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        {startNum}
+                      </span>
+                    )}
                     {letter}
                   </td>
                 );

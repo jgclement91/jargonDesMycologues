@@ -286,3 +286,119 @@ export async function createCrossword(data: {
     },
   });
 }
+
+export type CrosswordAdminEntry = {
+  number: number;
+  row: number;
+  col: number;
+  answer: string;
+  clue: string;
+  termId?: string;
+  termSlug?: string;
+};
+
+export type CrosswordAdminData = {
+  _id: string;
+  title: string;
+  slug: string;
+  difficulty: 'facile' | 'moyen' | 'difficile';
+  description?: string;
+  availableFrom?: string;
+  solutionFrom?: string;
+  gridData: {
+    rows: number;
+    cols: number;
+    across: CrosswordAdminEntry[];
+    down: CrosswordAdminEntry[];
+  };
+};
+
+export async function getAllCrosswordsAdmin(): Promise<Array<{
+  _id: string;
+  title: string;
+  slug: string;
+  difficulty: string;
+  availableFrom?: string;
+  publishedAt?: string;
+}>> {
+  const query = `*[_type == "crossword"] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    difficulty,
+    availableFrom,
+    publishedAt
+  }`;
+  return await _sanityWriteClient.fetch(query);
+}
+
+export async function fetchCrosswordForEdit(slug: string): Promise<CrosswordAdminData | null> {
+  const query = `*[_type == "crossword" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    difficulty,
+    description,
+    availableFrom,
+    solutionFrom,
+    gridData {
+      rows,
+      cols,
+      across[] {
+        number, row, col, answer,
+        "clue": coalesce(clue, ""),
+        "termId": termReference._ref,
+        "termSlug": termReference->term
+      },
+      down[] {
+        number, row, col, answer,
+        "clue": coalesce(clue, ""),
+        "termId": termReference._ref,
+        "termSlug": termReference->term
+      }
+    }
+  }`;
+  return await _sanityWriteClient.fetch(query, { slug });
+}
+
+type SlotData = { number: number; row: number; col: number; answer: string; clue: string; termId?: string };
+type UpdateCrosswordInput = {
+  title: string;
+  slug: string;
+  difficulty: string;
+  description?: string;
+  availableFrom?: string;
+  solutionFrom?: string;
+  gridData: { rows: number; cols: number; across: SlotData[]; down: SlotData[] };
+};
+
+export async function updateCrossword(id: string, data: UpdateCrosswordInput): Promise<void> {
+  const mapSlot = (slot: SlotData) => ({
+    _key: `${slot.number}-${Math.random().toString(36).slice(2, 7)}`,
+    number: slot.number,
+    row: slot.row,
+    col: slot.col,
+    answer: slot.answer.toUpperCase(),
+    clue: slot.clue,
+    ...(slot.termId ? { termReference: { _type: 'reference', _ref: slot.termId } } : {}),
+  });
+
+  await _sanityWriteClient.patch(id).set({
+    title: data.title,
+    slug: { _type: 'slug', current: data.slug },
+    difficulty: data.difficulty,
+    description: data.description,
+    availableFrom: data.availableFrom || null,
+    solutionFrom: data.solutionFrom || null,
+    gridData: {
+      rows: data.gridData.rows,
+      cols: data.gridData.cols,
+      across: data.gridData.across.map(mapSlot),
+      down: data.gridData.down.map(mapSlot),
+    },
+  }).commit();
+}
+
+export async function deleteCrossword(id: string): Promise<void> {
+  await _sanityWriteClient.delete(id);
+}

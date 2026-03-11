@@ -11,7 +11,7 @@ import {
   toggleCell,
 } from './gridUtils';
 import WordSlotPanel from './WordSlotPanel';
-import { saveCrossword } from '../../actions/crossword';
+import { saveCrossword, editCrossword } from '../../actions/crossword';
 
 type SlotFormData = {
   answer: string;
@@ -29,9 +29,12 @@ type Props = {
   description: string;
   availableFrom: string;
   solutionFrom: string;
+  crosswordId?: string;
+  initialGrid?: boolean[][];
+  initialSlotData?: Record<string, SlotFormData>;
 };
 
-const STORAGE_KEY = 'crossword-editor-draft';
+const CREATE_STORAGE_KEY = 'crossword-editor-draft';
 
 function loadDraft(slug: string, rows: number, cols: number): { grid: boolean[][]; slotData: Record<string, SlotFormData> } | null {
   try {
@@ -53,10 +56,11 @@ function saveDraft(slug: string, rows: number, cols: number, grid: boolean[][], 
   }
 }
 
-export default function CrosswordEditor({ rows, cols, title, slug, difficulty, description, availableFrom, solutionFrom }: Props) {
-  const [grid, setGrid] = useState<boolean[][]>(() => buildEmptyGrid(rows, cols));
+export default function CrosswordEditor({ rows, cols, title, slug, difficulty, description, availableFrom, solutionFrom, crosswordId, initialGrid, initialSlotData }: Props) {
+  const STORAGE_KEY = crosswordId ? `crossword-editor-draft-${crosswordId}` : CREATE_STORAGE_KEY;
+  const [grid, setGrid] = useState<boolean[][]>(() => initialGrid ?? buildEmptyGrid(rows, cols));
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
-  const [slotData, setSlotData] = useState<Record<string, SlotFormData>>({});
+  const [slotData, setSlotData] = useState<Record<string, SlotFormData>>(() => initialSlotData ?? {});
   const [isPending, startTransition] = useTransition();
   const [saveError, setSaveError] = useState<string | null>(null);
   const isFirstPersistRef = useRef(true);
@@ -206,8 +210,9 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
         clue: slotData[s.id]?.clue ?? '',
         termId: slotData[s.id]?.termId,
       }));
+    const payload = { title, slug, difficulty, description, availableFrom, solutionFrom, gridData: { rows, cols, across: mapSlots('across'), down: mapSlots('down') } };
     startTransition(() => {
-      saveCrossword({ title, slug, difficulty, description, availableFrom, solutionFrom, gridData: { rows, cols, across: mapSlots('across'), down: mapSlots('down') } });
+      crosswordId ? editCrossword(crosswordId, slug, payload) : saveCrossword(payload);
     });
   };
 
@@ -364,7 +369,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
           className="bg-emerald-600 hover:bg-emerald-700 text-white"
         >
           <Save className="h-4 w-4 mr-2" />
-          {isPending ? 'Sauvegarde…' : 'Publier le mot croisé'}
+          {isPending ? 'Sauvegarde…' : crosswordId ? 'Mettre à jour' : 'Publier le mot croisé'}
         </Button>
       </div>
     </div>
