@@ -1,6 +1,6 @@
 export const runtime = "edge"; // 'nodejs' is the default
 export const dynamic = "force-dynamic"; // no caching
-import { fetchTermList, getAllPlancheTitles } from "@/app/clients/sanityClient";
+import { fetchTermList, getAllPlancheTitles, getAllCrosswordSlugs } from "@/app/clients/sanityClient";
 
 function addGlossairePage(term: string) {
   return `  <url>
@@ -16,9 +16,17 @@ function addPlanchePage(title: string) {
   </url>`;
 }
 
+function addCrosswordPage(slug: string) {
+  return `  <url>
+    <loc>${`https://jargon-des-mycologues.vercel.app/mots-croises/${slug}`}</loc>
+    <changefreq>monthly</changefreq>
+  </url>`;
+}
+
 export async function GET(request: Request) {
   const terms = await fetchTermList();
   const plancheTitles = await getAllPlancheTitles();
+  const crosswordSlugs = await getAllCrosswordSlugs();
 
   const sitemap = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -27,6 +35,7 @@ export async function GET(request: Request) {
 </url>
   ${terms.map((t) => addGlossairePage(t.term)).join("\n")}
   ${plancheTitles.map((p) => addPlanchePage(p.title)).join("\n")}
+  ${crosswordSlugs.map((c) => addCrosswordPage(c.slug)).join("\n")}
   </urlset>`;
   return new Response(sitemap, {
     status: 200,

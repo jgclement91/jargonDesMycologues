@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@jaredreisinger/react-crossword": "^5.2.0",
     "@portabletext/react": "^4.0.0",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tooltip": "^1.2.8",
@@ -30,6 +31,7 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-modern-drawer": "^1.2.2",
+    "styled-components": "^6.3.11",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "3.3.2",
     "tailwindcss-animate": "^1.0.7",

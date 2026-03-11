@@ -16,7 +16,7 @@ import Drawer from "react-modern-drawer";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useMediaQuery } from "usehooks-ts";
-import { Search, BookOpen, Menu, X } from "lucide-react";
+import { Search, BookOpen, Menu, X, Puzzle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -203,6 +203,11 @@ const Sidebar = ({ terms }: Props) => {
     e.stopPropagation();
   };
 
+  const goToMotsCroises = (e: SyntheticEvent) => {
+    router.push(`/mots-croises`);
+    e.stopPropagation();
+  };
+
   if (path.startsWith("/planche/")) {
     return <></>;
   }
@@ -246,13 +251,21 @@ const Sidebar = ({ terms }: Props) => {
         {!path.endsWith("/planche") && (
           <Button
             variant="link"
-            className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-3 px-0 justify-start"
+            className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-1 px-0 justify-start"
             onClick={goToPlanche}
           >
             <BookOpen className="h-4 w-4" />
             Accès aux planches
           </Button>
         )}
+        <Button
+          variant="link"
+          className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-3 px-0 justify-start"
+          onClick={goToMotsCroises}
+        >
+          <Puzzle className="h-4 w-4" />
+          Mots croisés
+        </Button>
         <LetterSelect hideButton={!showLetterSelect} onChange={displayLetters} />
         <div className={`flex flex-col border border-slate-200 rounded-md overflow-hidden ${landscape ? '' : 'flex-1 min-h-0'}`}>
           <div className="bg-[#006000] text-white px-3 py-2 text-center font-medium">
@@ -334,6 +347,12 @@ const Sidebar = ({ terms }: Props) => {
             />
           </div>
         )}
+        <div className="flex w-full justify-center">
+          <Puzzle
+            className="pt-2.5 cursor-pointer h-9 w-9 text-slate-600"
+            onClick={goToMotsCroises}
+          />
+        </div>
         <Drawer
           className="flex flex-col"
           open={isOpen}
