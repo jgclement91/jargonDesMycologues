@@ -36,9 +36,9 @@ type Props = {
 
 const CREATE_STORAGE_KEY = 'crossword-editor-draft';
 
-function loadDraft(slug: string, rows: number, cols: number): { grid: boolean[][]; slotData: Record<string, SlotFormData> } | null {
+function loadDraft(key: string, slug: string, rows: number, cols: number): { grid: boolean[][]; slotData: Record<string, SlotFormData> } | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (parsed.slug !== slug || parsed.rows !== rows || parsed.cols !== cols) return null;
@@ -48,9 +48,9 @@ function loadDraft(slug: string, rows: number, cols: number): { grid: boolean[][
   }
 }
 
-function saveDraft(slug: string, rows: number, cols: number, grid: boolean[][], slotData: Record<string, SlotFormData>) {
+function saveDraft(key: string, slug: string, rows: number, cols: number, grid: boolean[][], slotData: Record<string, SlotFormData>) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ slug, rows, cols, grid, slotData }));
+    localStorage.setItem(key, JSON.stringify({ slug, rows, cols, grid, slotData }));
   } catch {
     // ignore storage errors
   }
@@ -67,7 +67,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
 
   // Restore draft on mount
   useEffect(() => {
-    const draft = loadDraft(slug, rows, cols);
+    const draft = loadDraft(STORAGE_KEY, slug, rows, cols);
     if (draft) {
       setGrid(draft.grid);
       setSlotData(draft.slotData);
@@ -82,7 +82,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
       isFirstPersistRef.current = false;
       return;
     }
-    saveDraft(slug, rows, cols, grid, slotData);
+    saveDraft(STORAGE_KEY, slug, rows, cols, grid, slotData);
   }, [slug, rows, cols, grid, slotData]);
 
   const slots = useMemo(() => computeSlots(grid, rows, cols), [grid, rows, cols]);
