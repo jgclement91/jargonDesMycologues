@@ -33,11 +33,11 @@ export function htmlToPortableText(html: string): PortableTextBlock[] {
       const tag = el.tagName.toUpperCase();
       if (tag === 'STRONG' || tag === 'B') next.push('strong');
       if (tag === 'EM' || tag === 'I') next.push('em');
-      for (const child of node.childNodes) walk(child, next);
+      Array.from(node.childNodes).forEach(child => walk(child, next));
     }
   }
 
-  for (const node of div.childNodes) walk(node, []);
+  Array.from(div.childNodes).forEach(node => walk(node, []));
 
   if (children.length === 0) children.push({ _type: 'span', _key: key(), text: '', marks: [] });
 
