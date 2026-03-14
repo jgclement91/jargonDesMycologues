@@ -5,8 +5,8 @@ import type { LibraryFormat } from '../utils/transformCrosswordData';
 
 export type CrosswordGridImperative = {
   reset: () => void;
-  fillAllAnswers: () => void;
   focusWord: (row: number, col: number, dir: 'across' | 'down') => void;
+  focusFirstEmptyInWord: (row: number, col: number, dir: 'across' | 'down') => void;
 };
 
 export type FocusChangeState = {
@@ -28,8 +28,10 @@ type Props = {
   rows: number;
   cols: number;
   storageKey: string;
+  showSolution?: boolean;
   onComplete?: (correct: boolean) => void;
   onFocusChange?: (state: FocusChangeState) => void;
+  onWordComplete?: (row: number, col: number, dir: 'across' | 'down') => void;
 };
 
 const MAX_CELL = 36;
@@ -86,7 +88,7 @@ function checkCorrect(grid: CellInfo[][], letters: Record<string, string>): bool
 }
 
 const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function CrosswordGrid(
-  { data, rows, cols, storageKey, onComplete, onFocusChange },
+  { data, rows, cols, storageKey, showSolution, onComplete, onFocusChange, onWordComplete },
   ref
 ) {
   const grid = useMemo(() => buildGrid(data, rows, cols), [data, rows, cols]);
@@ -105,10 +107,13 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
   const [containerWidth, setContainerWidth] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const hiddenInputRef = useRef<HTMLInputElement>(null);
   const onCompleteRef = useRef(onComplete);
   const onFocusChangeRef = useRef(onFocusChange);
+  const onWordCompleteRef = useRef(onWordComplete);
   useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
   useEffect(() => { onFocusChangeRef.current = onFocusChange; }, [onFocusChange]);
+  useEffect(() => { onWordCompleteRef.current = onWordComplete; }, [onWordComplete]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -125,16 +130,16 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
     : MAX_CELL;
 
   const startNumbers = useMemo(() => {
-    const map = new Map<string, number>();
+    const map = new Map<string, { across?: number; down?: number }>();
     for (const [num, entry] of Object.entries(data.across)) {
       const key = `${entry.row}-${entry.col}`;
-      const n = Number(num);
-      if (!map.has(key) || n < map.get(key)!) map.set(key, n);
+      const existing = map.get(key) ?? {};
+      map.set(key, { ...existing, across: Number(num) });
     }
     for (const [num, entry] of Object.entries(data.down)) {
       const key = `${entry.row}-${entry.col}`;
-      const n = Number(num);
-      if (!map.has(key) || n < map.get(key)!) map.set(key, n);
+      const existing = map.get(key) ?? {};
+      map.set(key, { ...existing, down: Number(num) });
     }
     return map;
   }, [data]);
@@ -200,7 +205,7 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
       setFocused({ row, col });
       setDirection(newDir);
     }
-    containerRef.current?.focus();
+    hiddenInputRef.current?.focus();
   }, [focused, direction, grid]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -227,8 +232,31 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
       writeLetter(row, col, e.key.toUpperCase());
       const next = findNext(row, col, direction, 1);
       if (next) setFocused(next);
+      else onWordCompleteRef.current?.(row, col, direction);
     }
   }, [focused, direction, findNext, writeLetter]);
+
+  const handleHiddenInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!focused) return;
+    const char = e.target.value.slice(-1);
+    e.target.value = '';
+    if (/^[a-zA-ZÀ-ÖØ-öø-ÿ]$/.test(char)) {
+      writeLetter(focused.row, focused.col, char.toUpperCase());
+      const next = findNext(focused.row, focused.col, direction, 1);
+      if (next) setFocused(next);
+      else onWordCompleteRef.current?.(focused.row, focused.col, direction);
+    }
+  }, [focused, direction, writeLetter, findNext]);
+
+  const handleHiddenInputBeforeInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+    const inputType = (e.nativeEvent as InputEvent).inputType;
+    if (inputType === 'deleteContentBackward' && focused) {
+      e.preventDefault();
+      writeLetter(focused.row, focused.col, '');
+      const prev = findNext(focused.row, focused.col, direction, -1);
+      if (prev) setFocused(prev);
+    }
+  }, [focused, direction, writeLetter, findNext]);
 
   useImperativeHandle(ref, () => ({
     reset: () => {
@@ -236,21 +264,21 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
       setFocused(null);
       try { localStorage.removeItem(storageKey); } catch { /* ignore */ }
     },
-    fillAllAnswers: () => {
-      const all: Record<string, string> = {};
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          if (!grid[r][c].isBlocked) all[`${r}-${c}`] = grid[r][c].answer;
-        }
-      }
-      setLetters(all);
-    },
     focusWord: (row: number, col: number, dir: 'across' | 'down') => {
       setFocused({ row, col });
       setDirection(dir);
-      containerRef.current?.focus();
+      hiddenInputRef.current?.focus();
     },
-  }), [grid, rows, cols, storageKey]);
+    focusFirstEmptyInWord: (row: number, col: number, dir: 'across' | 'down') => {
+      const cells = getWordCells(data, grid, row, col, dir);
+      const target = cells.find(c => !(letters[`${c.row}-${c.col}`])) ?? cells[0];
+      if (target) {
+        setFocused(target);
+        setDirection(dir);
+        hiddenInputRef.current?.focus();
+      }
+    },
+  }), [grid, rows, cols, storageKey, data, letters]);
 
   const numFontSize = Math.max(7, Math.min(9, cellSize / 4));
   const letterFontSize = Math.max(11, Math.round(cellSize * 0.42));
@@ -258,10 +286,21 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
   return (
     <div
       ref={containerRef}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      className="outline-none overflow-auto"
+      className="relative overflow-auto w-full"
     >
+      <input
+        ref={hiddenInputRef}
+        aria-hidden="true"
+        autoCapitalize="none"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
+        onKeyDown={handleKeyDown}
+        onChange={handleHiddenInputChange}
+        onBeforeInput={handleHiddenInputBeforeInput}
+        style={{ position: 'absolute', opacity: 0, width: 1, height: 1, top: 0, left: 0, border: 'none', padding: 0 }}
+        readOnly={false}
+      />
       <table style={{ borderCollapse: 'collapse' }}>
         <thead>
           <tr>
@@ -306,7 +345,14 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
 
                 const isFocused = focused?.row === r && focused?.col === c;
                 const isInWord = wordCells.has(key);
-                const letter = letters[key] ?? '';
+                const userLetter = letters[key] ?? '';
+                const isCorrect = userLetter.toUpperCase() === cell.answer.toUpperCase();
+                const displayLetter = showSolution
+                  ? (isCorrect && userLetter ? userLetter : cell.answer)
+                  : userLetter;
+                const letterColor = showSolution
+                  ? (isCorrect && userLetter ? '#16a34a' : '#94a3b8')
+                  : '#1e293b';
                 const bg = isFocused ? '#d1fae5' : isInWord ? '#dbeafe' : '#fff';
                 const startNum = startNumbers.get(key);
 
@@ -325,27 +371,47 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
                       verticalAlign: 'middle',
                       fontSize: letterFontSize,
                       fontWeight: 600,
-                      color: '#1e293b',
+                      color: letterColor,
                       userSelect: 'none',
                     }}
                   >
                     {startNum !== undefined && (
-                      <span
-                        style={{
-                          position: 'absolute',
-                          top: 1,
-                          left: 1,
-                          fontSize: numFontSize,
-                          lineHeight: 1,
-                          color: '#64748b',
-                          fontWeight: 600,
-                          pointerEvents: 'none',
-                        }}
-                      >
-                        {startNum}
-                      </span>
+                      <>
+                        {startNum.across !== undefined && (
+                          <span
+                            style={{
+                              position: 'absolute',
+                              top: 1,
+                              left: 1,
+                              fontSize: numFontSize,
+                              lineHeight: 1,
+                              color: '#64748b',
+                              fontWeight: 600,
+                              pointerEvents: 'none',
+                            }}
+                          >
+                            {startNum.across}
+                          </span>
+                        )}
+                        {startNum.down !== undefined && (
+                          <span
+                            style={{
+                              position: 'absolute',
+                              top: 1,
+                              right: 1,
+                              fontSize: numFontSize,
+                              lineHeight: 1,
+                              color: '#64748b',
+                              fontWeight: 600,
+                              pointerEvents: 'none',
+                            }}
+                          >
+                            {startNum.down}
+                          </span>
+                        )}
+                      </>
                     )}
-                    {letter}
+                    {displayLetter}
                   </td>
                 );
               })}

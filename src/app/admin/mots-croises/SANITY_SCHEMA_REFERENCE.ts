@@ -10,7 +10,23 @@ const wordEntry = {
     { name: 'row', title: 'Rangée (0-indexed)', type: 'number' },
     { name: 'col', title: 'Colonne (0-indexed)', type: 'number' },
     { name: 'answer', title: 'Réponse', type: 'string' },
-    { name: 'clue', title: 'Indice (texte libre)', type: 'text', rows: 2 },
+    {
+      name: 'clue',
+      title: 'Indice',
+      type: 'array',
+      of: [{
+        type: 'block',
+        styles: [],
+        lists: [],
+        marks: {
+          decorators: [
+            { title: 'Gras', value: 'strong' },
+            { title: 'Italique', value: 'em' },
+          ],
+          annotations: [],
+        },
+      }],
+    },
     {
       name: 'termReference',
       title: 'Terme du glossaire (optionnel)',
@@ -41,6 +57,7 @@ export default {
       },
     },
     { name: 'description', title: 'Description', type: 'text', rows: 2 },
+    { name: 'image', title: 'Photo', type: 'image', options: { hotspot: true } },
     { name: 'publishedAt', title: 'Publié le', type: 'datetime' },
     {
       name: 'gridData',

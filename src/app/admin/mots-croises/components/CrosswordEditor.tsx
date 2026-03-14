@@ -12,10 +12,12 @@ import {
 } from './gridUtils';
 import WordSlotPanel from './WordSlotPanel';
 import { saveCrossword, editCrossword } from '../../actions/crossword';
+import type { PortableTextBlock } from '../utils/portableText';
+import { isPortableTextEmpty } from '../utils/portableText';
 
 type SlotFormData = {
   answer: string;
-  clue: string;
+  clue: PortableTextBlock[];
   termId?: string;
   termSlug?: string;
 };
@@ -29,6 +31,8 @@ type Props = {
   description: string;
   availableFrom: string;
   solutionFrom: string;
+  imageAssetId?: string;
+  imageCaption?: PortableTextBlock[];
   crosswordId?: string;
   initialGrid?: boolean[][];
   initialSlotData?: Record<string, SlotFormData>;
@@ -56,7 +60,7 @@ function saveDraft(key: string, slug: string, rows: number, cols: number, grid: 
   }
 }
 
-export default function CrosswordEditor({ rows, cols, title, slug, difficulty, description, availableFrom, solutionFrom, crosswordId, initialGrid, initialSlotData }: Props) {
+export default function CrosswordEditor({ rows, cols, title, slug, difficulty, description, availableFrom, solutionFrom, imageAssetId, imageCaption, crosswordId, initialGrid, initialSlotData }: Props) {
   const STORAGE_KEY = crosswordId ? `crossword-editor-draft-${crosswordId}` : CREATE_STORAGE_KEY;
   const [grid, setGrid] = useState<boolean[][]>(() => initialGrid ?? buildEmptyGrid(rows, cols));
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
@@ -138,7 +142,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
     if (merged !== existing) {
       setSlotData(prev => ({
         ...prev,
-        [selectedSlot.id]: { ...(prev[selectedSlot.id] ?? { clue: '' }), answer: merged },
+        [selectedSlot.id]: { ...(prev[selectedSlot.id] ?? { clue: [] }), answer: merged },
       }));
     }
   // Only run on slot change
@@ -184,7 +188,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
       if (!data?.answer || data.answer.length !== slot.length || data.answer.includes(' ')) {
         errors.push(`${slot.number} ${slot.direction === 'across' ? 'H' : 'V'}: réponse manquante ou incorrecte`);
       }
-      if (!data?.clue) {
+      if (isPortableTextEmpty(data?.clue)) {
         errors.push(`${slot.number} ${slot.direction === 'across' ? 'H' : 'V'}: indice manquant`);
       }
     }
@@ -210,7 +214,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
         clue: slotData[s.id]?.clue ?? '',
         termId: slotData[s.id]?.termId,
       }));
-    const payload = { title, slug, difficulty, description, availableFrom, solutionFrom, gridData: { rows, cols, across: mapSlots('across'), down: mapSlots('down') } };
+    const payload = { title, slug, difficulty, description, availableFrom, solutionFrom, imageAssetId, imageCaption, gridData: { rows, cols, across: mapSlots('across'), down: mapSlots('down') } };
     startTransition(() => {
       crosswordId ? editCrossword(crosswordId, slug, payload) : saveCrossword(payload);
     });
@@ -305,7 +309,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
           <div className="flex-1">
             <WordSlotPanel
               slot={selectedSlot}
-              data={slotData[selectedSlotId ?? ''] ?? { answer: '', clue: '' }}
+              data={slotData[selectedSlotId ?? ''] ?? { answer: '', clue: [] }}
               onChange={handleSlotDataChange}
             />
           </div>
@@ -331,7 +335,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
                       {dirSlots.map(slot => {
                         const data = slotData[slot.id];
                         const merged = mergedAnswers[slot.id] ?? '';
-                        const isComplete = merged.length === slot.length && !merged.includes(' ') && !!data?.clue;
+                        const isComplete = merged.length === slot.length && !merged.includes(' ') && !isPortableTextEmpty(data?.clue);
                         return (
                           <button
                             key={slot.id}

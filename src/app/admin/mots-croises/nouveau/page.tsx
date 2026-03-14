@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CrosswordEditor from '../components/CrosswordEditor';
+import CrosswordImageUpload from '../components/CrosswordImageUpload';
+import ClueEditor from '../components/ClueEditor';
+import type { PortableTextBlock } from '../utils/portableText';
 import { logout } from '../../actions/auth';
 
 function slugify(text: string): string {
@@ -19,12 +22,16 @@ function slugify(text: string): string {
 type SetupData = {
   title: string;
   slug: string;
+  slugFrozen: boolean;
   difficulty: string;
   description: string;
   rows: number;
   cols: number;
   availableFrom: string;
   solutionFrom: string;
+  imageAssetId?: string;
+  imageUrl?: string;
+  imageCaption?: PortableTextBlock[];
 };
 
 const SETUP_KEY = 'crossword-editor-setup';
@@ -41,10 +48,11 @@ export default function NouveauMotCroisePage() {
   const [setup, setSetup] = useState<SetupData>({
     title: '',
     slug: '',
+    slugFrozen: false,
     difficulty: 'moyen',
     description: '',
-    rows: 13,
-    cols: 13,
+    rows: 14,
+    cols: 14,
     availableFrom: '',
     solutionFrom: '',
   });
@@ -62,7 +70,7 @@ export default function NouveauMotCroisePage() {
   }, [setup, phase]);
 
   const handleTitleChange = (title: string) => {
-    setSetup(prev => ({ ...prev, title, slug: slugify(title) }));
+    setSetup(prev => prev.slugFrozen ? { ...prev, title } : { ...prev, title, slug: slugify(title) });
   };
 
   const canProceed = setup.title.trim() && setup.slug.trim() && setup.rows >= 5 && setup.cols >= 5;
@@ -94,6 +102,8 @@ export default function NouveauMotCroisePage() {
             description={setup.description}
             availableFrom={setup.availableFrom}
             solutionFrom={setup.solutionFrom}
+            imageAssetId={setup.imageAssetId}
+          imageCaption={setup.imageCaption}
           />
         </div>
       </div>
@@ -125,12 +135,16 @@ export default function NouveauMotCroisePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Slug (URL)</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Slug (URL)
+              {setup.slugFrozen && <span className="ml-2 text-xs text-slate-400 font-normal">🔒 verrouillé</span>}
+            </label>
             <Input
               value={setup.slug}
-              onChange={e => setSetup(prev => ({ ...prev, slug: e.target.value }))}
+              onChange={e => !setup.slugFrozen && setSetup(prev => ({ ...prev, slug: e.target.value }))}
+              readOnly={setup.slugFrozen}
               placeholder="les-champignons-du-quebec"
-              className="font-mono text-sm"
+              className={`font-mono text-sm ${setup.slugFrozen ? 'bg-slate-50 text-slate-400' : ''}`}
             />
           </div>
 
@@ -207,10 +221,29 @@ export default function NouveauMotCroisePage() {
             </div>
           </div>
 
+          <CrosswordImageUpload
+            currentImageUrl={setup.imageUrl}
+            onUpload={(assetId, previewUrl) => setSetup(prev => ({ ...prev, imageAssetId: assetId, imageUrl: previewUrl }))}
+            onRemove={() => setSetup(prev => ({ ...prev, imageAssetId: undefined, imageUrl: undefined }))}
+          />
+
+          {setup.imageAssetId && (
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Légende de la photo <span className="font-normal text-slate-400">(optionnel)</span>
+              </label>
+              <ClueEditor
+                value={setup.imageCaption ?? []}
+                onChange={imageCaption => setSetup(prev => ({ ...prev, imageCaption }))}
+                placeholder="Amanita muscaria (Jean Després, 2021)…"
+              />
+            </div>
+          )}
+
           <Button
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
             disabled={!canProceed}
-            onClick={() => setPhase('editor')}
+            onClick={() => { setSetup(prev => ({ ...prev, slugFrozen: true })); setPhase('editor'); }}
           >
             Créer la grille →
           </Button>

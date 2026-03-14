@@ -4,6 +4,7 @@ import { logout } from '../actions/auth';
 import { Button } from '@/components/ui/button';
 import { Pencil, Plus } from 'lucide-react';
 import DeleteCrosswordButton from './components/DeleteCrosswordButton';
+import DuplicateCrosswordButton from './components/DuplicateCrosswordButton';
 
 const difficultyStyles: Record<string, string> = {
   facile: 'bg-emerald-100 text-emerald-800',
@@ -65,10 +66,11 @@ export default async function AdminCrosswordListPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1 justify-end">
                       <Button asChild variant="ghost" size="sm">
-                        <Link href={`/admin/mots-croises/${cw.slug}/edit`}>
+                        <Link href={`/admin/mots-croises/${cw.slug}/edit?phase=setup`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
+                      <DuplicateCrosswordButton slug={cw.slug} />
                       <DeleteCrosswordButton id={cw._id} slug={cw.slug} title={cw.title} />
                     </div>
                   </td>
