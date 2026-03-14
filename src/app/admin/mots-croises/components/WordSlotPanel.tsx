@@ -5,10 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, X, ExternalLink } from 'lucide-react';
 import type { WordSlot } from './gridUtils';
+import ClueEditor from './ClueEditor';
+import type { PortableTextBlock } from '../utils/portableText';
 
 type SlotFormData = {
   answer: string;
-  clue: string;
+  clue: PortableTextBlock[];
   termId?: string;
   termSlug?: string;
 };
@@ -151,12 +153,10 @@ export default function WordSlotPanel({ slot, data, onChange }: Props) {
         <label className="block text-sm font-medium text-slate-700 mb-1">
           Indice
         </label>
-        <textarea
+        <ClueEditor
           value={data.clue}
-          rows={3}
+          onChange={clue => onChange({ ...data, clue })}
           placeholder="Définition ou indice pour ce mot…"
-          className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          onChange={e => onChange({ ...data, clue: e.target.value })}
         />
       </div>
 

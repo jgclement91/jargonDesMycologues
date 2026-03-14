@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CrosswordEditor from '../../components/CrosswordEditor';
+import CrosswordImageUpload from '../../components/CrosswordImageUpload';
+import ClueEditor from '../../components/ClueEditor';
 import { logout } from '../../../actions/auth';
+import { saveSetupAction } from '../../../actions/crossword';
 import type { CrosswordAdminData } from '@/app/clients/sanityClient';
-
-type SlotFormData = { answer: string; clue: string; termId?: string; termSlug?: string };
+import { stringToPortableText, type PortableTextBlock } from '../../utils/portableText';
+type SlotFormData = { answer: string; clue: PortableTextBlock[]; termId?: string; termSlug?: string };
 
 function reconstructGrid(data: CrosswordAdminData): boolean[][] {
   const { rows, cols, across, down } = data.gridData;
@@ -18,13 +21,19 @@ function reconstructGrid(data: CrosswordAdminData): boolean[][] {
   return grid;
 }
 
+function normalizeClue(clue: unknown): PortableTextBlock[] {
+  if (typeof clue === 'string') return stringToPortableText(clue);
+  if (Array.isArray(clue) && clue.length > 0) return clue as PortableTextBlock[];
+  return [];
+}
+
 function reconstructSlotData(data: CrosswordAdminData): Record<string, SlotFormData> {
   const result: Record<string, SlotFormData> = {};
   for (const e of data.gridData.across) {
-    result[`across-${e.number}`] = { answer: e.answer, clue: e.clue, termId: e.termId, termSlug: e.termSlug };
+    result[`across-${e.number}`] = { answer: e.answer, clue: normalizeClue(e.clue), termId: e.termId, termSlug: e.termSlug };
   }
   for (const e of data.gridData.down) {
-    result[`down-${e.number}`] = { answer: e.answer, clue: e.clue, termId: e.termId, termSlug: e.termSlug };
+    result[`down-${e.number}`] = { answer: e.answer, clue: normalizeClue(e.clue), termId: e.termId, termSlug: e.termSlug };
   }
   return result;
 }
@@ -39,10 +48,12 @@ function slugify(text: string): string {
   return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-type SetupData = { title: string; slug: string; difficulty: string; description: string; rows: number; cols: number; availableFrom: string; solutionFrom: string };
+type SetupData = { title: string; slug: string; difficulty: string; description: string; rows: number; cols: number; availableFrom: string; solutionFrom: string; imageAssetId?: string; imageUrl?: string; imageCaption?: PortableTextBlock[] };
 
-export default function EditCrosswordClient({ data }: { data: CrosswordAdminData }) {
-  const [phase, setPhase] = useState<'setup' | 'editor'>('editor');
+export default function EditCrosswordClient({ data, initialPhase = 'editor' }: { data: CrosswordAdminData; initialPhase?: 'setup' | 'editor' }) {
+  const [phase, setPhase] = useState<'setup' | 'editor'>(initialPhase);
+  const [isSavingSetup, startSavingSetup] = useTransition();
+  const [setupSaveError, setSetupSaveError] = useState<string | null>(null);
   const [setup, setSetup] = useState<SetupData>({
     title: data.title,
     slug: data.slug,
@@ -52,6 +63,9 @@ export default function EditCrosswordClient({ data }: { data: CrosswordAdminData
     cols: data.gridData.cols,
     availableFrom: utcToMontrealLocal(data.availableFrom),
     solutionFrom: utcToMontrealLocal(data.solutionFrom),
+    imageAssetId: data.imageAssetId,
+    imageUrl: data.imageUrl,
+    imageCaption: data.imageCaption as PortableTextBlock[] | undefined,
   });
 
   const initialGrid = reconstructGrid(data);
@@ -89,6 +103,8 @@ export default function EditCrosswordClient({ data }: { data: CrosswordAdminData
             description={setup.description}
             availableFrom={setup.availableFrom}
             solutionFrom={setup.solutionFrom}
+            imageAssetId={setup.imageAssetId}
+            imageCaption={setup.imageCaption}
             crosswordId={data._id}
             initialGrid={initialGrid}
             initialSlotData={initialSlotData}
@@ -174,11 +190,44 @@ export default function EditCrosswordClient({ data }: { data: CrosswordAdminData
             </div>
           </div>
 
+          <CrosswordImageUpload
+            currentImageUrl={setup.imageUrl}
+            onUpload={(assetId, previewUrl) => setSetup(prev => ({ ...prev, imageAssetId: assetId, imageUrl: previewUrl }))}
+            onRemove={() => setSetup(prev => ({ ...prev, imageAssetId: undefined, imageUrl: undefined }))}
+          />
+
+          {setup.imageAssetId && (
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Légende de la photo <span className="font-normal text-slate-400">(optionnel)</span>
+              </label>
+              <ClueEditor
+                value={setup.imageCaption ?? []}
+                onChange={imageCaption => setSetup(prev => ({ ...prev, imageCaption }))}
+                placeholder="Amanita muscaria (Jean Després, 2021)…"
+              />
+            </div>
+          )}
+
+          {setupSaveError && (
+            <p className="text-sm text-red-600">{setupSaveError}</p>
+          )}
           <Button
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-            onClick={() => setPhase('editor')}
+            disabled={isSavingSetup}
+            onClick={() => {
+              setSetupSaveError(null);
+              startSavingSetup(async () => {
+                try {
+                  await saveSetupAction(data._id, data.slug, setup);
+                  setPhase('editor');
+                } catch {
+                  setSetupSaveError('Erreur lors de la sauvegarde. Veuillez réessayer.');
+                }
+              });
+            }}
           >
-            Modifier la grille →
+            {isSavingSetup ? 'Enregistrement…' : 'Modifier la grille →'}
           </Button>
         </div>
       </div>

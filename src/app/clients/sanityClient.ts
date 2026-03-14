@@ -152,12 +152,14 @@ const _sanityWriteClient = createClient({
   useCdn: false,
 });
 
+type PortableTextBlock = { _type: string; _key: string; [key: string]: unknown };
+
 export type CrosswordClue = {
   number: number;
   row: number;
   col: number;
   answer: string;
-  clue: string;
+  clue: PortableTextBlock[];
   termId?: string;
   termSlug?: string;
 };
@@ -170,6 +172,8 @@ export type CrosswordData = {
   description?: string;
   availableFrom?: string;
   solutionFrom?: string;
+  imageUrl?: string;
+  imageCaption?: PortableTextBlock[];
   gridData: {
     rows: number;
     cols: number;
@@ -185,6 +189,7 @@ export async function getAllCrosswords(): Promise<Array<{
   slug: string;
   difficulty: string;
   description?: string;
+  imageUrl?: string;
   publishedAt?: string;
 }>> {
   const now = new Date().toISOString();
@@ -194,7 +199,8 @@ export async function getAllCrosswords(): Promise<Array<{
     "slug": slug.current,
     difficulty,
     description,
-    publishedAt
+    publishedAt,
+    "imageUrl": image.asset->url
   }`;
   return await _sanityClient.fetch(query, { now });
 }
@@ -219,7 +225,7 @@ export async function fetchCrossword(slug: string): Promise<CrosswordData | null
         row,
         col,
         answer,
-        "clue": coalesce(clue, termReference->definition[0].children[0].text, ""),
+        "clue": select(defined(clue) && length(clue) > 0 => clue, defined(termReference) => termReference->definition, []),
         "termId": termReference->_id,
         "termSlug": termReference->term
       },
@@ -228,14 +234,16 @@ export async function fetchCrossword(slug: string): Promise<CrosswordData | null
         row,
         col,
         answer,
-        "clue": coalesce(clue, termReference->definition[0].children[0].text, ""),
+        "clue": select(defined(clue) && length(clue) > 0 => clue, defined(termReference) => termReference->definition, []),
         "termId": termReference->_id,
         "termSlug": termReference->term
       }
     },
     availableFrom,
     solutionFrom,
-    publishedAt
+    publishedAt,
+    "imageUrl": image.asset->url,
+    imageCaption
   }`;
   return await _sanityClient.fetch(query, { slug });
 }
@@ -252,14 +260,16 @@ export async function createCrossword(data: {
   description?: string;
   availableFrom?: string;
   solutionFrom?: string;
+  imageAssetId?: string;
+  imageCaption?: PortableTextBlock[];
   gridData: {
     rows: number;
     cols: number;
-    across: Array<{ number: number; row: number; col: number; answer: string; clue: string; termId?: string }>;
-    down: Array<{ number: number; row: number; col: number; answer: string; clue: string; termId?: string }>;
+    across: Array<{ number: number; row: number; col: number; answer: string; clue: PortableTextBlock[]; termId?: string }>;
+    down: Array<{ number: number; row: number; col: number; answer: string; clue: PortableTextBlock[]; termId?: string }>;
   };
 }): Promise<{ _id: string }> {
-  const mapSlot = (slot: { number: number; row: number; col: number; answer: string; clue: string; termId?: string }) => ({
+  const mapSlot = (slot: { number: number; row: number; col: number; answer: string; clue: PortableTextBlock[]; termId?: string }) => ({
     _key: `${slot.number}-${Math.random().toString(36).slice(2, 7)}`,
     number: slot.number,
     row: slot.row,
@@ -278,6 +288,8 @@ export async function createCrossword(data: {
     availableFrom: data.availableFrom,
     solutionFrom: data.solutionFrom,
     publishedAt: new Date().toISOString(),
+    ...(data.imageAssetId ? { image: { _type: 'image', asset: { _type: 'reference', _ref: data.imageAssetId } } } : {}),
+    imageCaption: data.imageCaption,
     gridData: {
       rows: data.gridData.rows,
       cols: data.gridData.cols,
@@ -292,7 +304,7 @@ export type CrosswordAdminEntry = {
   row: number;
   col: number;
   answer: string;
-  clue: string;
+  clue: PortableTextBlock[];
   termId?: string;
   termSlug?: string;
 };
@@ -305,6 +317,9 @@ export type CrosswordAdminData = {
   description?: string;
   availableFrom?: string;
   solutionFrom?: string;
+  imageAssetId?: string;
+  imageUrl?: string;
+  imageCaption?: PortableTextBlock[];
   gridData: {
     rows: number;
     cols: number;
@@ -346,22 +361,25 @@ export async function fetchCrosswordForEdit(slug: string): Promise<CrosswordAdmi
       cols,
       across[] {
         number, row, col, answer,
-        "clue": coalesce(clue, ""),
+        "clue": coalesce(clue, []),
         "termId": termReference._ref,
         "termSlug": termReference->term
       },
       down[] {
         number, row, col, answer,
-        "clue": coalesce(clue, ""),
+        "clue": coalesce(clue, []),
         "termId": termReference._ref,
         "termSlug": termReference->term
       }
-    }
+    },
+    "imageAssetId": image.asset._ref,
+    "imageUrl": image.asset->url,
+    imageCaption
   }`;
   return await _sanityWriteClient.fetch(query, { slug });
 }
 
-type SlotData = { number: number; row: number; col: number; answer: string; clue: string; termId?: string };
+type SlotData = { number: number; row: number; col: number; answer: string; clue: PortableTextBlock[]; termId?: string };
 type UpdateCrosswordInput = {
   title: string;
   slug: string;
@@ -369,6 +387,8 @@ type UpdateCrosswordInput = {
   description?: string;
   availableFrom?: string;
   solutionFrom?: string;
+  imageAssetId?: string;
+  imageCaption?: PortableTextBlock[];
   gridData: { rows: number; cols: number; across: SlotData[]; down: SlotData[] };
 };
 
@@ -390,12 +410,36 @@ export async function updateCrossword(id: string, data: UpdateCrosswordInput): P
     description: data.description,
     availableFrom: data.availableFrom || null,
     solutionFrom: data.solutionFrom || null,
+    ...(data.imageAssetId !== undefined ? (data.imageAssetId ? { image: { _type: 'image', asset: { _type: 'reference', _ref: data.imageAssetId } } } : { image: null }) : {}),
+    imageCaption: data.imageCaption ?? null,
     gridData: {
       rows: data.gridData.rows,
       cols: data.gridData.cols,
       across: data.gridData.across.map(mapSlot),
       down: data.gridData.down.map(mapSlot),
     },
+  }).commit();
+}
+
+export async function updateCrosswordMetadata(id: string, data: {
+  title: string;
+  slug: string;
+  difficulty: string;
+  description?: string;
+  availableFrom?: string;
+  solutionFrom?: string;
+  imageAssetId?: string;
+  imageCaption?: PortableTextBlock[];
+}): Promise<void> {
+  await _sanityWriteClient.patch(id).set({
+    title: data.title,
+    slug: { _type: 'slug', current: data.slug },
+    difficulty: data.difficulty,
+    description: data.description,
+    availableFrom: data.availableFrom || null,
+    solutionFrom: data.solutionFrom || null,
+    ...(data.imageAssetId !== undefined ? (data.imageAssetId ? { image: { _type: 'image', asset: { _type: 'reference', _ref: data.imageAssetId } } } : { image: null }) : {}),
+    imageCaption: data.imageCaption ?? null,
   }).commit();
 }
 

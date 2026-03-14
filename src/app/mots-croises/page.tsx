@@ -1,5 +1,6 @@
 import { getAllCrosswords } from '@/app/clients/sanityClient';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import GlossaireWrapper from '@/app/components/glossaire-wrapper';
 
@@ -35,19 +36,26 @@ export default async function MotsCroisesPage() {
               <Link
                 key={crossword._id}
                 href={`/mots-croises/${crossword.slug}`}
-                className="bg-white rounded-lg border border-slate-200 p-5 hover:border-emerald-500 hover:shadow-md transition-all"
+                className="bg-white rounded-lg border border-slate-200 overflow-hidden hover:border-emerald-500 hover:shadow-md transition-all"
               >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h2 className="text-lg font-semibold text-slate-800">{crossword.title}</h2>
-                  {crossword.difficulty && (
-                    <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${difficultyStyles[crossword.difficulty] ?? ''}`}>
-                      {crossword.difficulty.charAt(0).toUpperCase() + crossword.difficulty.slice(1)}
-                    </span>
+                {crossword.imageUrl && (
+                  <div className="relative w-full aspect-video">
+                    <Image src={crossword.imageUrl} alt={crossword.title} fill className="object-cover" unoptimized />
+                  </div>
+                )}
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h2 className="text-lg font-semibold text-slate-800">{crossword.title}</h2>
+                    {crossword.difficulty && (
+                      <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${difficultyStyles[crossword.difficulty] ?? ''}`}>
+                        {crossword.difficulty.charAt(0).toUpperCase() + crossword.difficulty.slice(1)}
+                      </span>
+                    )}
+                  </div>
+                  {crossword.description && (
+                    <p className="text-slate-500 text-sm line-clamp-2">{crossword.description}</p>
                   )}
                 </div>
-                {crossword.description && (
-                  <p className="text-slate-500 text-sm line-clamp-2">{crossword.description}</p>
-                )}
               </Link>
             ))}
           </div>

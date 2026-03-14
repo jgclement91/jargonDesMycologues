@@ -71,6 +71,9 @@ export default async function CrosswordPage({ params }: Props) {
           solutionAvailable={solutionAvailable}
           rows={sanityData.gridData.rows}
           cols={sanityData.gridData.cols}
+          imageUrl={sanityData.imageUrl}
+          imageAlt={sanityData.title}
+          imageCaption={sanityData.imageCaption}
         />
       </div>
     </GlossaireWrapper>
