@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import GlossaireWrapper from '@/app/components/glossaire-wrapper';
+import CrosswordCompleteBadge from './components/CrosswordCompleteBadge';
 
 export const metadata: Metadata = {
   title: 'Mots Croisés Mycologiques',
@@ -46,11 +47,14 @@ export default async function MotsCroisesPage() {
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h2 className="text-lg font-semibold text-slate-800">{crossword.title}</h2>
-                    {crossword.difficulty && (
-                      <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${difficultyStyles[crossword.difficulty] ?? ''}`}>
-                        {crossword.difficulty.charAt(0).toUpperCase() + crossword.difficulty.slice(1)}
-                      </span>
-                    )}
+                    <div className="shrink-0 flex items-center gap-1.5">
+                      <CrosswordCompleteBadge crosswordId={crossword._id} />
+                      {crossword.difficulty && (
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${difficultyStyles[crossword.difficulty] ?? ''}`}>
+                          {crossword.difficulty.charAt(0).toUpperCase() + crossword.difficulty.slice(1)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {crossword.description && (
                     <p className="text-slate-500 text-sm line-clamp-2">{crossword.description}</p>

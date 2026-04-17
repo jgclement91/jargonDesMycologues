@@ -12,7 +12,7 @@ import {
 import TermList from "../terms/term-list";
 import LetterList from "../letters/letter-list";
 import Logo from "./logo";
-import Drawer from "react-modern-drawer";
+import Drawer from "./drawer";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useMediaQuery } from "usehooks-ts";
@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button";
 
 import LetterSelect from "../letters/letter-select";
 
-import "react-modern-drawer/dist/index.css";
 import "./sidebar.css";
 
 type Props = {
@@ -254,34 +253,36 @@ const Sidebar = ({ terms, isAdmin }: Props) => {
             }
           />
         </div>
-        {!path.endsWith("/planche") && (
+        <div className={landscape ? 'flex gap-5' : 'flex flex-col'}>
+          {!path.endsWith("/planche") && (
+            <Button
+              variant="link"
+              className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-1 px-0 justify-start"
+              onClick={goToPlanche}
+            >
+              <BookOpen className="h-4 w-4" />
+              Accès aux planches
+            </Button>
+          )}
           <Button
             variant="link"
-            className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-1 px-0 justify-start"
-            onClick={goToPlanche}
+            className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-3 px-0 justify-start"
+            onClick={goToMotsCroises}
           >
-            <BookOpen className="h-4 w-4" />
-            Accès aux planches
+            <Puzzle className="h-4 w-4" />
+            Mots croisés
           </Button>
-        )}
-        <Button
-          variant="link"
-          className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium text-sm mb-3 px-0 justify-start"
-          onClick={goToMotsCroises}
-        >
-          <Puzzle className="h-4 w-4" />
-          Mots croisés
-        </Button>
-        {isAdmin && (
-          <Button
-            variant="link"
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 font-medium text-sm mb-3 px-0 justify-start"
-            onClick={goToAdmin}
-          >
-            <ShieldCheck className="h-4 w-4" />
-            Administration
-          </Button>
-        )}
+          {isAdmin && (
+            <Button
+              variant="link"
+              className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 font-medium text-sm mb-3 px-0 justify-start"
+              onClick={goToAdmin}
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Administration
+            </Button>
+          )}
+        </div>
         <LetterSelect hideButton={!showLetterSelect} onChange={displayLetters} />
         <div className={`flex flex-col border border-slate-200 rounded-md overflow-hidden ${landscape ? '' : 'flex-1 min-h-0'}`}>
           <div className="bg-[#006000] text-white px-3 py-2 text-center font-medium">

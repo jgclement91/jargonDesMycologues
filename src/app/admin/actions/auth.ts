@@ -28,7 +28,7 @@ export async function login(
     maxAge: 60 * 60 * 24 * 7,
   });
 
-  redirect('/admin/mots-croises/nouveau');
+  redirect('/admin/mots-croises');
 }
 
 export async function logout() {

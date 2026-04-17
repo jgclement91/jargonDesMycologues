@@ -4,7 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import CrosswordGrid, { type CrosswordGridImperative, type FocusChangeState } from './CrosswordGrid';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, CheckCircle2, Eye, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { RotateCcw, CheckCircle2, Eye, BookOpen, ChevronLeft, ChevronRight, Lightbulb } from 'lucide-react';
 import type { LibraryFormat, LibraryClue } from '../utils/transformCrosswordData';
 import { PortableText, type PortableTextComponents } from '@portabletext/react';
 import Image from 'next/image';
@@ -61,10 +61,11 @@ function ClueGroup({ title, entries, direction, activeNum, onClueClick }: ClueGr
                   href={`/glossaire/${entry.termSlug}`}
                   target="_blank"
                   onClick={e => e.stopPropagation()}
-                  className="shrink-0 self-center text-slate-300 hover:text-emerald-600 transition-colors"
+                  className="shrink-0 self-center flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded-full transition-colors no-underline visited:text-emerald-600"
                   title={`Voir la définition de « ${entry.termSlug} »`}
                 >
-                  <BookOpen className="h-3.5 w-3.5" />
+                  <BookOpen className="h-3 w-3" />
+                  <span>Glossaire</span>
                 </Link>
               )}
             </li>
@@ -94,6 +95,17 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
   const [focusState, setFocusState] = useState<FocusChangeState>(null);
   const [showSolution, setShowSolution] = useState(false);
   const storageKey = `crossword-${crosswordId}`;
+
+  const [completedWords, setCompletedWords] = useState<Set<string>>(new Set());
+
+  const [showCaption, setShowCaption] = useState(false);
+
+  const [revealedWords, setRevealedWords] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      return new Set(JSON.parse(localStorage.getItem(storageKey + '-revealed-words') || '[]'));
+    } catch { return new Set(); }
+  });
 
   const totalClues = Object.keys(data.across).length + Object.keys(data.down).length;
 
@@ -128,15 +140,21 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
   const activeDownNum = focusState?.dir === 'down' ? (focusState.wordNum ?? null) : null;
 
   const handleComplete = useCallback((correct: boolean) => {
-    if (correct) setIsComplete(true);
-  }, []);
+    if (correct) {
+      setIsComplete(true);
+      try { localStorage.setItem(storageKey + '-complete', '1'); } catch { /* ignore */ }
+    }
+  }, [storageKey]);
 
   const handleReset = useCallback(() => {
     gridRef.current?.reset();
     setIsComplete(false);
     setFocusState(null);
     setShowSolution(false);
-  }, []);
+    setRevealedWords(new Set());
+    setShowCaption(false);
+    try { localStorage.removeItem(storageKey + '-revealed-words'); } catch { /* ignore */ }
+  }, [storageKey]);
 
   const handleClueClick = useCallback((row: number, col: number, dir: 'across' | 'down') => {
     gridRef.current?.focusWord(row, col, dir);
@@ -196,6 +214,7 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
           <li>• Tapez vos lettres au clavier — le curseur avance automatiquement jusqu'à la fin du mot.</li>
           <li>• Utilisez <kbd className="px-1 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-mono">←</kbd> <kbd className="px-1 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-mono">→</kbd> <kbd className="px-1 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-mono">↑</kbd> <kbd className="px-1 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-mono">↓</kbd> pour déplacer le curseur, et <kbd className="px-1 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-mono">⌫</kbd> pour effacer une lettre.</li>
           <li>• Cliquez sur un indice dans la liste ci-dessous pour sélectionner le mot correspondant dans la grille.</li>
+          <li>• Certains indices sont accompagnés d'un badge <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full"><BookOpen className="h-3 w-3 inline" />Glossaire</span> — cliquez dessus pour consulter un terme en lien avec l'indice.</li>
         </ul>
       </details>
 
@@ -217,14 +236,37 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
               {activeClue.dir === 'across' ? '→' : '↓'}
             </span>
             <span className="text-sm text-slate-700 flex-1 leading-snug"><PortableText value={activeClue.clue} components={clueComponents} /></span>
+            {!revealedWords.has(`${activeClue.num}-${activeClue.dir}`) &&
+             !completedWords.has(`${activeClue.num}-${activeClue.dir}`) && (
+              <button
+                onClick={() => {
+                  const entry = (activeClue.dir === 'across' ? data.across : data.down)[String(activeClue.num)];
+                  if (entry) {
+                    gridRef.current?.revealWord(entry.row, entry.col, activeClue.dir);
+                    setRevealedWords(prev => {
+                      const next = new Set(prev);
+                      next.add(`${activeClue.num}-${activeClue.dir}`);
+                      try { localStorage.setItem(storageKey + '-revealed-words', JSON.stringify([...next])); } catch { /* ignore */ }
+                      return next;
+                    });
+                  }
+                }}
+                className="shrink-0 flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded-full transition-colors"
+                title="Révéler le mot"
+              >
+                <Lightbulb className="h-3 w-3" />
+                <span>Révéler</span>
+              </button>
+            )}
             {activeClue.termSlug && (
               <Link
                 href={`/glossaire/${activeClue.termSlug}`}
                 target="_blank"
-                className="shrink-0 text-slate-300 hover:text-emerald-600 transition-colors"
+                className="shrink-0 flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded-full transition-colors no-underline visited:text-emerald-600"
                 title={`Voir la définition de « ${activeClue.termSlug} »`}
               >
-                <BookOpen className="h-3.5 w-3.5" />
+                <BookOpen className="h-3 w-3" />
+                <span>Glossaire</span>
               </Link>
             )}
           </>
@@ -253,6 +295,7 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
             onComplete={handleComplete}
             onFocusChange={handleFocusChange}
             onWordComplete={handleWordComplete}
+            onCompletedWordsChange={setCompletedWords}
           />
         </div>
         {imageUrl && (
@@ -263,7 +306,16 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
             <div className="relative w-full rounded-lg overflow-hidden border border-slate-200">
               <Image src={imageUrl} alt={imageAlt ?? ''} width={320} height={320} className="w-full h-auto object-cover" unoptimized />
             </div>
-            {imageCaption && imageCaption.length > 0 && (
+            {imageCaption && imageCaption.length > 0 && !showCaption && !showSolution && !isComplete && (
+              <button
+                onClick={() => setShowCaption(true)}
+                className="mt-2 flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2 py-1 rounded-full transition-colors"
+              >
+                <Lightbulb className="h-3 w-3" />
+                Révéler la légende
+              </button>
+            )}
+            {(showCaption || showSolution || isComplete) && imageCaption && imageCaption.length > 0 && (
               <p className="mt-1.5 text-xs text-slate-500 leading-snug">
                 <PortableText value={imageCaption} components={clueComponents} />
               </p>

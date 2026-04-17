@@ -2,7 +2,7 @@
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen.svg)](https://nodejs.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-13.5-black)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0-black)](https://nextjs.org/)
 [![Live Demo](https://img.shields.io/badge/demo-online-success)](https://www.jargon-des-mycologues.org/)
 
 🍄 Un glossaire mycologique illustré et vulgarisé contenant plus de 1200 termes avec hyperliens, exemples et 75+ planches anatomiques détaillées.
@@ -36,6 +36,8 @@ To address the difficulty of technical terms, we've implemented hyperlinks direc
 - **16 contextual categories** - Each term is tagged with visual icons (Classification, Ecology, Microscopy, etc.)
 - **Responsive design** - Optimized for both mobile and desktop experiences
 - **Alphabetical navigation** - Browse terms by letter with prefix/suffix support
+- **Mycological crosswords** - Interactive crossword puzzles with clues drawn from the glossary, word-reveal assistance, progress tracking, and persistent state via localStorage
+- **Admin interface** - Protected back-office to create and manage crosswords, anatomical plates, and associated media
 
 ---
 
@@ -43,9 +45,10 @@ To address the difficulty of technical terms, we've implemented hyperlinks direc
 
 - **Framework:** [Next.js](https://nextjs.org/) 16.0 (App Router)
 - **Language:** TypeScript 5.1
+- **Runtime:** React 19
 - **CMS:** [Sanity](https://www.sanity.io/) (Headless CMS)
 - **Styling:** TailwindCSS 3.3
-- **UI Components:** Radix UI
+- **UI Components:** Radix UI, Lucide React
 - **Deployment:** Vercel
 - **Analytics:** Vercel Analytics
 
@@ -115,17 +118,22 @@ src/app/
 │   └── sitemap/              # Dynamic sitemap generation
 ├── clients/
 │   └── sanityClient.ts       # Sanity CMS client and queries
-├── components/               # Shared components
-│   ├── header.tsx
-│   ├── footer.tsx
-│   ├── sidebar.tsx           # Main navigation
-│   └── portableTextComponent.tsx  # Custom link handling
+├── components/               # Shared components (header, footer, sidebar…)
 ├── glossaire/                # Glossary pages
 │   ├── page.tsx
 │   └── [term]/page.tsx       # Dynamic term pages
+├── letters/                  # Alphabetical navigation components
+├── mots-croises/             # Interactive crossword section
+│   ├── page.tsx              # Crossword list
+│   ├── [slug]/page.tsx       # Individual crossword page
+│   ├── components/           # CrosswordPlayer, CrosswordGrid, badges
+│   └── utils/                # Data transformation helpers
 ├── planche/                  # Anatomical plates section
 │   ├── page.tsx              # Plates list
 │   └── [title]/page.tsx      # Individual plate view
+├── admin/                    # Protected back-office
+│   ├── login/                # Authentication
+│   └── mots-croises/         # Crossword management (create, edit, duplicate)
 └── terms/                    # Term display components
 ```
 

@@ -7,6 +7,7 @@ export type CrosswordGridImperative = {
   reset: () => void;
   focusWord: (row: number, col: number, dir: 'across' | 'down') => void;
   focusFirstEmptyInWord: (row: number, col: number, dir: 'across' | 'down') => void;
+  revealWord: (row: number, col: number, dir: 'across' | 'down') => void;
 };
 
 export type FocusChangeState = {
@@ -32,6 +33,7 @@ type Props = {
   onComplete?: (correct: boolean) => void;
   onFocusChange?: (state: FocusChangeState) => void;
   onWordComplete?: (row: number, col: number, dir: 'across' | 'down') => void;
+  onCompletedWordsChange?: (words: Set<string>) => void;
 };
 
 const MAX_CELL = 36;
@@ -88,7 +90,7 @@ function checkCorrect(grid: CellInfo[][], letters: Record<string, string>): bool
 }
 
 const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function CrosswordGrid(
-  { data, rows, cols, storageKey, showSolution, onComplete, onFocusChange, onWordComplete },
+  { data, rows, cols, storageKey, showSolution, onComplete, onFocusChange, onWordComplete, onCompletedWordsChange },
   ref
 ) {
   const grid = useMemo(() => buildGrid(data, rows, cols), [data, rows, cols]);
@@ -102,6 +104,16 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
     }
   });
 
+  const [revealedCells, setRevealedCells] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const stored = JSON.parse(localStorage.getItem(storageKey + '-revealed') || '[]');
+      return new Set(stored);
+    } catch {
+      return new Set();
+    }
+  });
+
   const [focused, setFocused] = useState<{ row: number; col: number } | null>(null);
   const [direction, setDirection] = useState<'across' | 'down'>('across');
   const [containerWidth, setContainerWidth] = useState(0);
@@ -111,9 +123,11 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
   const onCompleteRef = useRef(onComplete);
   const onFocusChangeRef = useRef(onFocusChange);
   const onWordCompleteRef = useRef(onWordComplete);
+  const onCompletedWordsChangeRef = useRef(onCompletedWordsChange);
   useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
   useEffect(() => { onFocusChangeRef.current = onFocusChange; }, [onFocusChange]);
   useEffect(() => { onWordCompleteRef.current = onWordComplete; }, [onWordComplete]);
+  useEffect(() => { onCompletedWordsChangeRef.current = onCompletedWordsChange; }, [onCompletedWordsChange]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -162,11 +176,39 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
     );
   }, [focused, direction, data, grid]);
 
+  const completedWords = useMemo((): Set<string> => {
+    const completed = new Set<string>();
+    for (const [num, entry] of Object.entries(data.across)) {
+      const cells = Array.from({ length: entry.answer.length }, (_, i) => ({ row: entry.row, col: entry.col + i }));
+      if (cells.every(c => (letters[`${c.row}-${c.col}`] ?? '').toUpperCase() === grid[c.row][c.col].answer.toUpperCase())) {
+        completed.add(`${num}-across`);
+      }
+    }
+    for (const [num, entry] of Object.entries(data.down)) {
+      const cells = Array.from({ length: entry.answer.length }, (_, i) => ({ row: entry.row + i, col: entry.col }));
+      if (cells.every(c => (letters[`${c.row}-${c.col}`] ?? '').toUpperCase() === grid[c.row][c.col].answer.toUpperCase())) {
+        completed.add(`${num}-down`);
+      }
+    }
+    return completed;
+  }, [letters, data, grid]);
+
   useEffect(() => {
     if (Object.keys(letters).length > 0 && checkCorrect(grid, letters)) {
       onCompleteRef.current?.(true);
     }
   }, [letters, grid]);
+
+  useEffect(() => {
+    onCompletedWordsChangeRef.current?.(completedWords);
+  }, [completedWords]);
+
+  const isLocked = useCallback((row: number, col: number) => {
+    const cell = grid[row][col];
+    return revealedCells.has(`${row}-${col}`) ||
+      (cell.acrossNum !== undefined && completedWords.has(`${cell.acrossNum}-across`)) ||
+      (cell.downNum !== undefined && completedWords.has(`${cell.downNum}-down`));
+  }, [grid, revealedCells, completedWords]);
 
   const writeLetter = useCallback((row: number, col: number, char: string) => {
     setLetters(prev => {
@@ -224,45 +266,49 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
       moves[e.key]();
     } else if (e.key === 'Backspace') {
       e.preventDefault();
-      writeLetter(row, col, '');
+      if (!isLocked(row, col)) writeLetter(row, col, '');
       const prev = findNext(row, col, direction, -1);
       if (prev) setFocused(prev);
     } else if (e.key.length === 1 && /^[a-zA-ZÀ-ÖØ-öø-ÿ]$/.test(e.key)) {
       e.preventDefault();
-      writeLetter(row, col, e.key.toUpperCase());
+      if (!isLocked(row, col)) writeLetter(row, col, e.key.toUpperCase());
       const next = findNext(row, col, direction, 1);
       if (next) setFocused(next);
       else onWordCompleteRef.current?.(row, col, direction);
     }
-  }, [focused, direction, findNext, writeLetter]);
+  }, [focused, direction, findNext, writeLetter, isLocked]);
 
   const handleHiddenInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!focused) return;
     const char = e.target.value.slice(-1);
     e.target.value = '';
     if (/^[a-zA-ZÀ-ÖØ-öø-ÿ]$/.test(char)) {
-      writeLetter(focused.row, focused.col, char.toUpperCase());
+      if (!isLocked(focused.row, focused.col)) writeLetter(focused.row, focused.col, char.toUpperCase());
       const next = findNext(focused.row, focused.col, direction, 1);
       if (next) setFocused(next);
       else onWordCompleteRef.current?.(focused.row, focused.col, direction);
     }
-  }, [focused, direction, writeLetter, findNext]);
+  }, [focused, direction, writeLetter, findNext, isLocked]);
 
   const handleHiddenInputBeforeInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
     const inputType = (e.nativeEvent as InputEvent).inputType;
     if (inputType === 'deleteContentBackward' && focused) {
       e.preventDefault();
-      writeLetter(focused.row, focused.col, '');
+      if (!isLocked(focused.row, focused.col)) writeLetter(focused.row, focused.col, '');
       const prev = findNext(focused.row, focused.col, direction, -1);
       if (prev) setFocused(prev);
     }
-  }, [focused, direction, writeLetter, findNext]);
+  }, [focused, direction, writeLetter, findNext, isLocked]);
 
   useImperativeHandle(ref, () => ({
     reset: () => {
       setLetters({});
+      setRevealedCells(new Set());
       setFocused(null);
-      try { localStorage.removeItem(storageKey); } catch { /* ignore */ }
+      try {
+        localStorage.removeItem(storageKey);
+        localStorage.removeItem(storageKey + '-revealed');
+      } catch { /* ignore */ }
     },
     focusWord: (row: number, col: number, dir: 'across' | 'down') => {
       setFocused({ row, col });
@@ -276,6 +322,29 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
         setFocused(target);
         setDirection(dir);
         hiddenInputRef.current?.focus();
+      }
+    },
+    revealWord: (row: number, col: number, dir: 'across' | 'down') => {
+      const cells = getWordCells(data, grid, row, col, dir);
+      const toReveal: string[] = [];
+      const nextLetters = { ...letters };
+      for (const c of cells) {
+        const key = `${c.row}-${c.col}`;
+        const correct = grid[c.row][c.col].answer;
+        if ((letters[key] ?? '').toUpperCase() !== correct.toUpperCase()) {
+          nextLetters[key] = correct;
+          toReveal.push(key);
+        }
+      }
+      if (toReveal.length > 0) {
+        setLetters(nextLetters);
+        try { localStorage.setItem(storageKey, JSON.stringify(nextLetters)); } catch { /* ignore */ }
+        setRevealedCells(prev => {
+          const next = new Set(prev);
+          toReveal.forEach(k => next.add(k));
+          try { localStorage.setItem(storageKey + '-revealed', JSON.stringify([...next])); } catch { /* ignore */ }
+          return next;
+        });
       }
     },
   }), [grid, rows, cols, storageKey, data, letters]);
@@ -350,9 +419,17 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
                 const displayLetter = showSolution
                   ? (isCorrect && userLetter ? userLetter : cell.answer)
                   : userLetter;
-                const letterColor = showSolution
-                  ? (isCorrect && userLetter ? '#16a34a' : '#94a3b8')
-                  : '#1e293b';
+                const isRevealed = revealedCells.has(key);
+                const inCompletedWord =
+                  (cell.acrossNum !== undefined && completedWords.has(`${cell.acrossNum}-across`)) ||
+                  (cell.downNum !== undefined && completedWords.has(`${cell.downNum}-down`));
+                const letterColor = isRevealed
+                  ? '#94a3b8'
+                  : showSolution
+                    ? (isCorrect && userLetter ? '#16a34a' : '#94a3b8')
+                    : inCompletedWord
+                      ? '#16a34a'
+                      : '#1e293b';
                 const bg = isFocused ? '#d1fae5' : isInWord ? '#dbeafe' : '#fff';
                 const startNum = startNumbers.get(key);
 
