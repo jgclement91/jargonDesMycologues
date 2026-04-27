@@ -15,7 +15,12 @@ const clueComponents: PortableTextComponents = {
     strong: ({ children }) => <strong className="font-bold">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,
   },
+  hardBreak: () => null,
 };
+
+function filterEmptyBlocks(blocks: { children?: Array<{ text?: string }> }[]): { children?: Array<{ text?: string }> }[] {
+  return blocks.filter(b => !b.children || b.children.some(c => c.text?.replace(/[ \s]/g, '') !== ''));
+}
 
 type ClueGroupProps = {
   title: string;
@@ -36,14 +41,14 @@ function ClueGroup({ title, entries, direction, activeNum, onClueClick }: ClueGr
   return (
     <div>
       <h3 className="font-semibold text-slate-700 mb-3">{title}</h3>
-      <ul className="space-y-0.5">
+      <ul className="space-y-1.5">
         {sorted.map(([num, entry]) => {
           const isActive = activeNum !== null && Number(num) === activeNum;
           return (
             <li
               key={num}
               ref={isActive ? activeRef : null}
-              className={`text-sm flex items-baseline gap-2 cursor-pointer rounded px-1 -mx-1 transition-colors ${
+              className={`text-sm flex items-start gap-2 cursor-pointer rounded px-1 -mx-1 transition-colors ${
                 isActive
                   ? 'bg-emerald-50 text-emerald-800'
                   : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
@@ -55,7 +60,7 @@ function ClueGroup({ title, entries, direction, activeNum, onClueClick }: ClueGr
               }`}>
                 {num}
               </span>
-              <span className="flex-1 py-0.5"><PortableText value={entry.clue} components={clueComponents} /></span>
+              <span className="flex-1"><PortableText value={filterEmptyBlocks(entry.clue as { children?: Array<{ text?: string }> }[])} components={clueComponents} /></span>
               {entry.termSlug && (
                 <Link
                   href={`/glossaire/${entry.termSlug}`}
@@ -88,6 +93,13 @@ type Props = {
   imageAlt?: string;
   imageCaption?: PortableTextBlock[];
 };
+
+function hasCaptionContent(blocks?: PortableTextBlock[]): boolean {
+  return !!blocks?.some(b => {
+    const children = (b as { children?: Array<{ text?: string }> }).children;
+    return children?.some(c => c.text?.trim());
+  });
+}
 
 export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, rows, cols, imageUrl, imageAlt, imageCaption }: Props) {
   const gridRef = useRef<CrosswordGridImperative>(null);

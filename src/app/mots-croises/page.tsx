@@ -6,7 +6,7 @@ import GlossaireWrapper from '@/app/components/glossaire-wrapper';
 import CrosswordCompleteBadge from './components/CrosswordCompleteBadge';
 
 export const metadata: Metadata = {
-  title: 'Mots Croisés Mycologiques',
+  title: 'Croisements de champignons',
   description: 'Testez vos connaissances du jargon mycologique avec nos mots croisés.',
 };
 
@@ -22,9 +22,9 @@ export default async function MotsCroisesPage() {
   return (
     <GlossaireWrapper>
       <div className="container px-4 py-8 mx-auto max-w-4xl">
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">Mots Croisés Mycologiques</h1>
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">Croisements de champignons</h1>
         <p className="text-slate-600 mb-8">
-          Testez vos connaissances du jargon mycologique. Les indices proviennent directement du glossaire.
+          Testez vos connaissances du jargon mycologique. Plusieurs indices sont inspirés du glossaire.
         </p>
 
         {crosswords.length === 0 ? (

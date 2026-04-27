@@ -6,7 +6,7 @@ import Footer from "./components/footer";
 import Header from "./components/header";
 import LandscapeContainer from "./components/landscape-container";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Image as ImageIcon } from "lucide-react";
+import { BookOpen, Image as ImageIcon, Puzzle } from "lucide-react";
 
 import BackgroundLeft from "./images/home/home-background-left.jpg";
 import BackgroundRight from "./images/home/home-background-right.jpg";
@@ -96,30 +96,57 @@ const Home = () => {
           </section>
 
           <section className="mb-12">
-            <div className="bg-emerald-50 rounded-lg border border-emerald-200 p-8 text-center">
-              <h2 className="text-2xl font-medium text-emerald-900 mb-4">
-                Prêt à explorer?
-              </h2>
-              <p className="text-emerald-700 mb-6 max-w-2xl mx-auto">
-                Parcourez le glossaire illustré ou découvrez les planches anatomiques détaillées
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <h2 className="text-2xl font-medium text-emerald-900 mb-6 text-center">
+              Prêt à explorer?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col items-center text-center gap-4">
+                <div className="bg-emerald-100 rounded-full p-3">
+                  <BookOpen className="w-6 h-6 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-800 mb-1">Glossaire</h3>
+                  <p className="text-sm text-slate-600">Plus de 1200 termes illustrés et vulgarisés avec hyperliens et exemples</p>
+                </div>
                 <Button
-                  size="lg"
-                  className="bg-emerald-600 hover:bg-emerald-700"
+                  className="mt-auto bg-emerald-600 hover:bg-emerald-700 w-full"
                   onClick={() => router.push('/glossaire')}
                 >
-                  <BookOpen className="w-5 h-5 mr-2" />
                   Explorer le glossaire
                 </Button>
+              </div>
+
+              <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col items-center text-center gap-4">
+                <div className="bg-emerald-100 rounded-full p-3">
+                  <ImageIcon className="w-6 h-6 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-800 mb-1">Planches anatomiques</h3>
+                  <p className="text-sm text-slate-600">Plus de 75 planches détaillées, dont une soixantaine de portraits de famille</p>
+                </div>
                 <Button
-                  size="lg"
                   variant="outline"
-                  className="border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                  className="mt-auto border-emerald-600 text-emerald-700 hover:bg-emerald-50 w-full"
                   onClick={() => router.push('/planche')}
                 >
-                  <ImageIcon className="w-5 h-5 mr-2" />
                   Voir les planches
+                </Button>
+              </div>
+
+              <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col items-center text-center gap-4">
+                <div className="bg-emerald-100 rounded-full p-3">
+                  <Puzzle className="w-6 h-6 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-800 mb-1">Mots croisés</h3>
+                  <p className="text-sm text-slate-600">Testez vos connaissances mycologiques avec nos grilles de mots croisés</p>
+                </div>
+                <Button
+                  variant="outline"
+                  className="mt-auto border-emerald-600 text-emerald-700 hover:bg-emerald-50 w-full"
+                  onClick={() => router.push('/mots-croises')}
+                >
+                  Jouer aux mots croisés
                 </Button>
               </div>
             </div>
