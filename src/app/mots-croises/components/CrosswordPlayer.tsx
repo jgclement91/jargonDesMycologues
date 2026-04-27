@@ -4,7 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import CrosswordGrid, { type CrosswordGridImperative, type FocusChangeState } from './CrosswordGrid';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, CheckCircle2, Eye, BookOpen, ChevronLeft, ChevronRight, Lightbulb } from 'lucide-react';
+import { RotateCcw, CheckCircle2, BookOpen, ChevronLeft, ChevronRight, Lightbulb } from 'lucide-react';
 import type { LibraryFormat, LibraryClue } from '../utils/transformCrosswordData';
 import { PortableText, type PortableTextComponents } from '@portabletext/react';
 import Image from 'next/image';
@@ -86,7 +86,6 @@ type PortableTextBlock = { _type: string; _key: string; [key: string]: unknown }
 type Props = {
   data: LibraryFormat;
   crosswordId: string;
-  solutionAvailable: boolean;
   rows: number;
   cols: number;
   imageUrl?: string;
@@ -94,18 +93,11 @@ type Props = {
   imageCaption?: PortableTextBlock[];
 };
 
-function hasCaptionContent(blocks?: PortableTextBlock[]): boolean {
-  return !!blocks?.some(b => {
-    const children = (b as { children?: Array<{ text?: string }> }).children;
-    return children?.some(c => c.text?.trim());
-  });
-}
 
-export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, rows, cols, imageUrl, imageAlt, imageCaption }: Props) {
+export default function CrosswordPlayer({ data, crosswordId, rows, cols, imageUrl, imageAlt, imageCaption }: Props) {
   const gridRef = useRef<CrosswordGridImperative>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [focusState, setFocusState] = useState<FocusChangeState>(null);
-  const [showSolution, setShowSolution] = useState(false);
   const storageKey = `crossword-${crosswordId}`;
 
   const [completedWords, setCompletedWords] = useState<Set<string>>(new Set());
@@ -162,7 +154,6 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
     gridRef.current?.reset();
     setIsComplete(false);
     setFocusState(null);
-    setShowSolution(false);
     setRevealedWords(new Set());
     setShowCaption(false);
     try { localStorage.removeItem(storageKey + '-revealed-words'); } catch { /* ignore */ }
@@ -195,17 +186,6 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
       <div className="flex items-center justify-between gap-4 bg-slate-50 rounded-lg px-4 py-3">
         <span className="text-sm text-slate-600">{totalClues} mots</span>
         <div className="flex gap-2 flex-wrap justify-end">
-          {solutionAvailable && (
-            <Button
-              variant={showSolution ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setShowSolution(s => !s)}
-              className="text-xs gap-1"
-            >
-              <Eye className="h-3 w-3" />
-              {showSolution ? 'Masquer la solution' : 'Voir la solution'}
-            </Button>
-          )}
           <Button variant="outline" size="sm" onClick={handleReset} className="text-xs gap-1">
             <RotateCcw className="h-3 w-3" />
             Réinitialiser
@@ -303,7 +283,7 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
             rows={rows}
             cols={cols}
             storageKey={storageKey}
-            showSolution={showSolution}
+
             onComplete={handleComplete}
             onFocusChange={handleFocusChange}
             onWordComplete={handleWordComplete}
@@ -318,7 +298,7 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
             <div className="relative w-full rounded-lg overflow-hidden border border-slate-200">
               <Image src={imageUrl} alt={imageAlt ?? ''} width={320} height={320} className="w-full h-auto object-cover" unoptimized />
             </div>
-            {imageCaption && imageCaption.length > 0 && !showCaption && !showSolution && !isComplete && (
+            {imageCaption && imageCaption.length > 0 && !showCaption && !isComplete && (
               <button
                 onClick={() => setShowCaption(true)}
                 className="mt-2 flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2 py-1 rounded-full transition-colors"
@@ -327,7 +307,7 @@ export default function CrosswordPlayer({ data, crosswordId, solutionAvailable, 
                 Révéler la légende
               </button>
             )}
-            {(showCaption || showSolution || isComplete) && imageCaption && imageCaption.length > 0 && (
+            {(showCaption || isComplete) && imageCaption && imageCaption.length > 0 && (
               <p className="mt-1.5 text-xs text-slate-500 leading-snug">
                 <PortableText value={imageCaption} components={clueComponents} />
               </p>

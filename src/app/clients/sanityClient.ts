@@ -171,7 +171,6 @@ export type CrosswordData = {
   difficulty: 'facile' | 'moyen' | 'difficile';
   description?: string;
   availableFrom?: string;
-  solutionFrom?: string;
   imageUrl?: string;
   imageCaption?: PortableTextBlock[];
   gridData: {
@@ -240,7 +239,6 @@ export async function fetchCrossword(slug: string): Promise<CrosswordData | null
       }
     },
     availableFrom,
-    solutionFrom,
     publishedAt,
     "imageUrl": image.asset->url,
     imageCaption
@@ -259,7 +257,6 @@ export async function createCrossword(data: {
   difficulty: string;
   description?: string;
   availableFrom?: string;
-  solutionFrom?: string;
   imageAssetId?: string;
   imageCaption?: PortableTextBlock[];
   gridData: {
@@ -286,7 +283,6 @@ export async function createCrossword(data: {
     difficulty: data.difficulty,
     description: data.description,
     availableFrom: data.availableFrom,
-    solutionFrom: data.solutionFrom,
     publishedAt: new Date().toISOString(),
     ...(data.imageAssetId ? { image: { _type: 'image', asset: { _type: 'reference', _ref: data.imageAssetId } } } : {}),
     imageCaption: data.imageCaption,
@@ -316,7 +312,6 @@ export type CrosswordAdminData = {
   difficulty: 'facile' | 'moyen' | 'difficile';
   description?: string;
   availableFrom?: string;
-  solutionFrom?: string;
   imageAssetId?: string;
   imageUrl?: string;
   imageCaption?: PortableTextBlock[];
@@ -355,7 +350,6 @@ export async function fetchCrosswordForEdit(slug: string): Promise<CrosswordAdmi
     difficulty,
     description,
     availableFrom,
-    solutionFrom,
     gridData {
       rows,
       cols,
@@ -386,7 +380,6 @@ type UpdateCrosswordInput = {
   difficulty: string;
   description?: string;
   availableFrom?: string;
-  solutionFrom?: string;
   imageAssetId?: string;
   imageCaption?: PortableTextBlock[];
   gridData: { rows: number; cols: number; across: SlotData[]; down: SlotData[] };
@@ -409,7 +402,6 @@ export async function updateCrossword(id: string, data: UpdateCrosswordInput): P
     difficulty: data.difficulty,
     description: data.description,
     availableFrom: data.availableFrom || null,
-    solutionFrom: data.solutionFrom || null,
     ...(data.imageAssetId !== undefined ? (data.imageAssetId ? { image: { _type: 'image', asset: { _type: 'reference', _ref: data.imageAssetId } } } : { image: null }) : {}),
     imageCaption: data.imageCaption ?? null,
     gridData: {
@@ -427,7 +419,6 @@ export async function updateCrosswordMetadata(id: string, data: {
   difficulty: string;
   description?: string;
   availableFrom?: string;
-  solutionFrom?: string;
   imageAssetId?: string;
   imageCaption?: PortableTextBlock[];
 }): Promise<void> {
@@ -437,7 +428,6 @@ export async function updateCrosswordMetadata(id: string, data: {
     difficulty: data.difficulty,
     description: data.description,
     availableFrom: data.availableFrom || null,
-    solutionFrom: data.solutionFrom || null,
     ...(data.imageAssetId !== undefined ? (data.imageAssetId ? { image: { _type: 'image', asset: { _type: 'reference', _ref: data.imageAssetId } } } : { image: null }) : {}),
     imageCaption: data.imageCaption ?? null,
   }).commit();

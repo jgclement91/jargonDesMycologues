@@ -38,7 +38,6 @@ export default async function CrosswordPage({ params }: Props) {
   if (!sanityData) notFound();
 
   const crosswordData = transformForLibrary(sanityData);
-  const solutionAvailable = !!sanityData.solutionFrom && new Date(sanityData.solutionFrom) <= new Date();
 
   return (
     <GlossaireWrapper>
@@ -68,7 +67,6 @@ export default async function CrosswordPage({ params }: Props) {
         <CrosswordPlayer
           data={crosswordData}
           crosswordId={sanityData._id}
-          solutionAvailable={solutionAvailable}
           rows={sanityData.gridData.rows}
           cols={sanityData.gridData.cols}
           imageUrl={sanityData.imageUrl}

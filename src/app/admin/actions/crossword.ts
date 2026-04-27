@@ -21,7 +21,6 @@ type SaveCrosswordInput = {
   difficulty: string;
   description?: string;
   availableFrom?: string;
-  solutionFrom?: string;
   imageAssetId?: string;
   imageCaption?: PortableTextBlock[];
   gridData: {
@@ -46,7 +45,6 @@ export async function saveSetupAction(id: string, originalSlug: string, data: Om
   await updateCrosswordMetadata(id, {
     ...data,
     availableFrom: data.availableFrom ? montrealToUtcIso(data.availableFrom) : undefined,
-    solutionFrom: data.solutionFrom ? montrealToUtcIso(data.solutionFrom) : undefined,
   });
   revalidatePath('/mots-croises');
   revalidatePath(`/mots-croises/${originalSlug}`);
@@ -57,7 +55,6 @@ export async function editCrossword(id: string, originalSlug: string, data: Save
   await updateCrossword(id, {
     ...data,
     availableFrom: data.availableFrom ? montrealToUtcIso(data.availableFrom) : undefined,
-    solutionFrom: data.solutionFrom ? montrealToUtcIso(data.solutionFrom) : undefined,
   });
   revalidatePath('/mots-croises');
   revalidatePath(`/mots-croises/${originalSlug}`);
@@ -101,7 +98,6 @@ export async function saveCrossword(data: SaveCrosswordInput) {
   await createCrossword({
     ...data,
     availableFrom: data.availableFrom ? montrealToUtcIso(data.availableFrom) : undefined,
-    solutionFrom: data.solutionFrom ? montrealToUtcIso(data.solutionFrom) : undefined,
   });
   revalidatePath('/mots-croises');
   revalidatePath(`/mots-croises/${data.slug}`);

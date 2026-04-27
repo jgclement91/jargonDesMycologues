@@ -30,7 +30,6 @@ type Props = {
   difficulty: string;
   description: string;
   availableFrom: string;
-  solutionFrom: string;
   imageAssetId?: string;
   imageCaption?: PortableTextBlock[];
   crosswordId?: string;
@@ -60,7 +59,7 @@ function saveDraft(key: string, slug: string, rows: number, cols: number, grid: 
   }
 }
 
-export default function CrosswordEditor({ rows, cols, title, slug, difficulty, description, availableFrom, solutionFrom, imageAssetId, imageCaption, crosswordId, initialGrid, initialSlotData }: Props) {
+export default function CrosswordEditor({ rows, cols, title, slug, difficulty, description, availableFrom, imageAssetId, imageCaption, crosswordId, initialGrid, initialSlotData }: Props) {
   const STORAGE_KEY = crosswordId ? `crossword-editor-draft-${crosswordId}` : CREATE_STORAGE_KEY;
   const [grid, setGrid] = useState<boolean[][]>(() => initialGrid ?? buildEmptyGrid(rows, cols));
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
@@ -214,7 +213,7 @@ export default function CrosswordEditor({ rows, cols, title, slug, difficulty, d
         clue: slotData[s.id]?.clue ?? '',
         termId: slotData[s.id]?.termId,
       }));
-    const payload = { title, slug, difficulty, description, availableFrom, solutionFrom, imageAssetId, imageCaption, gridData: { rows, cols, across: mapSlots('across'), down: mapSlots('down') } };
+    const payload = { title, slug, difficulty, description, availableFrom, imageAssetId, imageCaption, gridData: { rows, cols, across: mapSlots('across'), down: mapSlots('down') } };
     startTransition(() => {
       crosswordId ? editCrossword(crosswordId, slug, payload) : saveCrossword(payload);
     });

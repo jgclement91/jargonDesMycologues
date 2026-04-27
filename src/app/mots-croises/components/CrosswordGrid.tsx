@@ -29,7 +29,6 @@ type Props = {
   rows: number;
   cols: number;
   storageKey: string;
-  showSolution?: boolean;
   onComplete?: (correct: boolean) => void;
   onFocusChange?: (state: FocusChangeState) => void;
   onWordComplete?: (row: number, col: number, dir: 'across' | 'down') => void;
@@ -38,6 +37,10 @@ type Props = {
 
 const MAX_CELL = 36;
 const ROW_LABEL_WIDTH = 24;
+
+function normalizeChar(char: string): string {
+  return char.normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
 
 function buildGrid(data: LibraryFormat, rows: number, cols: number): CellInfo[][] {
   const g: CellInfo[][] = Array.from({ length: rows }, () =>
@@ -48,7 +51,7 @@ function buildGrid(data: LibraryFormat, rows: number, cols: number): CellInfo[][
     for (let i = 0; i < entry.answer.length; i++) {
       const cell = g[entry.row][entry.col + i];
       cell.isBlocked = false;
-      cell.answer = entry.answer[i];
+      cell.answer = normalizeChar(entry.answer[i]).toUpperCase();
       cell.acrossNum = Number(num);
     }
   }
@@ -57,7 +60,7 @@ function buildGrid(data: LibraryFormat, rows: number, cols: number): CellInfo[][
     for (let i = 0; i < entry.answer.length; i++) {
       const cell = g[entry.row + i][entry.col];
       cell.isBlocked = false;
-      if (!cell.answer) cell.answer = entry.answer[i];
+      if (!cell.answer) cell.answer = normalizeChar(entry.answer[i]).toUpperCase();
       cell.downNum = Number(num);
     }
   }
@@ -90,7 +93,7 @@ function checkCorrect(grid: CellInfo[][], letters: Record<string, string>): bool
 }
 
 const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function CrosswordGrid(
-  { data, rows, cols, storageKey, showSolution, onComplete, onFocusChange, onWordComplete, onCompletedWordsChange },
+  { data, rows, cols, storageKey, onComplete, onFocusChange, onWordComplete, onCompletedWordsChange },
   ref
 ) {
   const grid = useMemo(() => buildGrid(data, rows, cols), [data, rows, cols]);
@@ -271,7 +274,7 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
       if (prev) setFocused(prev);
     } else if (e.key.length === 1 && /^[a-zA-ZÀ-ÖØ-öø-ÿ]$/.test(e.key)) {
       e.preventDefault();
-      if (!isLocked(row, col)) writeLetter(row, col, e.key.toUpperCase());
+      if (!isLocked(row, col)) writeLetter(row, col, normalizeChar(e.key).toUpperCase());
       const next = findNext(row, col, direction, 1);
       if (next) setFocused(next);
       else onWordCompleteRef.current?.(row, col, direction);
@@ -283,7 +286,7 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
     const char = e.target.value.slice(-1);
     e.target.value = '';
     if (/^[a-zA-ZÀ-ÖØ-öø-ÿ]$/.test(char)) {
-      if (!isLocked(focused.row, focused.col)) writeLetter(focused.row, focused.col, char.toUpperCase());
+      if (!isLocked(focused.row, focused.col)) writeLetter(focused.row, focused.col, normalizeChar(char).toUpperCase());
       const next = findNext(focused.row, focused.col, direction, 1);
       if (next) setFocused(next);
       else onWordCompleteRef.current?.(focused.row, focused.col, direction);
@@ -416,20 +419,16 @@ const CrosswordGrid = forwardRef<CrosswordGridImperative, Props>(function Crossw
                 const isInWord = wordCells.has(key);
                 const userLetter = letters[key] ?? '';
                 const isCorrect = userLetter.toUpperCase() === cell.answer.toUpperCase();
-                const displayLetter = showSolution
-                  ? (isCorrect && userLetter ? userLetter : cell.answer)
-                  : userLetter;
+                const displayLetter = userLetter;
                 const isRevealed = revealedCells.has(key);
                 const inCompletedWord =
                   (cell.acrossNum !== undefined && completedWords.has(`${cell.acrossNum}-across`)) ||
                   (cell.downNum !== undefined && completedWords.has(`${cell.downNum}-down`));
                 const letterColor = isRevealed
                   ? '#94a3b8'
-                  : showSolution
-                    ? (isCorrect && userLetter ? '#16a34a' : '#94a3b8')
-                    : inCompletedWord
-                      ? '#16a34a'
-                      : '#1e293b';
+                  : inCompletedWord
+                    ? '#16a34a'
+                    : '#1e293b';
                 const bg = isFocused ? '#d1fae5' : isInWord ? '#dbeafe' : '#fff';
                 const startNum = startNumbers.get(key);
 

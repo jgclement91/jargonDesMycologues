@@ -28,7 +28,6 @@ type SetupData = {
   rows: number;
   cols: number;
   availableFrom: string;
-  solutionFrom: string;
   imageAssetId?: string;
   imageUrl?: string;
   imageCaption?: PortableTextBlock[];
@@ -54,7 +53,6 @@ export default function NouveauMotCroisePage() {
     rows: 14,
     cols: 14,
     availableFrom: '',
-    solutionFrom: '',
   });
 
   useEffect(() => {
@@ -101,7 +99,6 @@ export default function NouveauMotCroisePage() {
             difficulty={setup.difficulty}
             description={setup.description}
             availableFrom={setup.availableFrom}
-            solutionFrom={setup.solutionFrom}
             imageAssetId={setup.imageAssetId}
           imageCaption={setup.imageCaption}
           />
@@ -209,16 +206,6 @@ export default function NouveauMotCroisePage() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Solution visible à partir de <span className="font-normal text-slate-400">(heure de Montréal, optionnel)</span>
-              </label>
-              <Input
-                type="datetime-local"
-                value={setup.solutionFrom}
-                onChange={e => setSetup(prev => ({ ...prev, solutionFrom: e.target.value }))}
-              />
-            </div>
           </div>
 
           <CrosswordImageUpload

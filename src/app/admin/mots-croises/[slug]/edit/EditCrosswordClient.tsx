@@ -48,7 +48,7 @@ function slugify(text: string): string {
   return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-type SetupData = { title: string; slug: string; difficulty: string; description: string; rows: number; cols: number; availableFrom: string; solutionFrom: string; imageAssetId?: string; imageUrl?: string; imageCaption?: PortableTextBlock[] };
+type SetupData = { title: string; slug: string; difficulty: string; description: string; rows: number; cols: number; availableFrom: string; imageAssetId?: string; imageUrl?: string; imageCaption?: PortableTextBlock[] };
 
 export default function EditCrosswordClient({ data, initialPhase = 'editor' }: { data: CrosswordAdminData; initialPhase?: 'setup' | 'editor' }) {
   const [phase, setPhase] = useState<'setup' | 'editor'>(initialPhase);
@@ -62,7 +62,6 @@ export default function EditCrosswordClient({ data, initialPhase = 'editor' }: {
     rows: data.gridData.rows,
     cols: data.gridData.cols,
     availableFrom: utcToMontrealLocal(data.availableFrom),
-    solutionFrom: utcToMontrealLocal(data.solutionFrom),
     imageAssetId: data.imageAssetId,
     imageUrl: data.imageUrl,
     imageCaption: data.imageCaption as PortableTextBlock[] | undefined,
@@ -102,7 +101,6 @@ export default function EditCrosswordClient({ data, initialPhase = 'editor' }: {
             difficulty={setup.difficulty}
             description={setup.description}
             availableFrom={setup.availableFrom}
-            solutionFrom={setup.solutionFrom}
             imageAssetId={setup.imageAssetId}
             imageCaption={setup.imageCaption}
             crosswordId={data._id}
@@ -176,16 +174,6 @@ export default function EditCrosswordClient({ data, initialPhase = 'editor' }: {
                 type="datetime-local"
                 value={setup.availableFrom}
                 onChange={e => setSetup(prev => ({ ...prev, availableFrom: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Solution visible à partir de <span className="font-normal text-slate-400">(heure de Montréal, optionnel)</span>
-              </label>
-              <Input
-                type="datetime-local"
-                value={setup.solutionFrom}
-                onChange={e => setSetup(prev => ({ ...prev, solutionFrom: e.target.value }))}
               />
             </div>
           </div>
