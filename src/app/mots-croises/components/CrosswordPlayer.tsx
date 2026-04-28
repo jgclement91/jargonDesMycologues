@@ -60,7 +60,7 @@ function ClueGroup({ title, entries, direction, activeNum, onClueClick }: ClueGr
               }`}>
                 {num}
               </span>
-              <span className="flex-1"><PortableText value={filterEmptyBlocks(entry.clue as { children?: Array<{ text?: string }> }[])} components={clueComponents} /></span>
+              <span className="flex-1"><PortableText value={filterEmptyBlocks(entry.clue as { children?: Array<{ text?: string }> }[]) as PortableTextBlock[]} components={clueComponents} /></span>
               {entry.termSlug && (
                 <Link
                   href={`/glossaire/${entry.termSlug}`}
